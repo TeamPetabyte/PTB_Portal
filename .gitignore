@@ -1,0 +1,17 @@
+/node_modules
+/.next
+/out
+/build
+next-env.d.ts
+
+# secrets — ห้ามขึ้น git เด็ดขาด
+.env
+.env.local
+.env*.local
+
+# misc
+.DS_Store
+*.log
+
+# build artifacts
+*.tsbuildinfo

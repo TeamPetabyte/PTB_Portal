@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// One row per app in the portal catalog.
+// No AppAccess rows = visible to all employees. See AppAccess below for the "A" in C+A.
+model App {
+  id            String   @id @default(cuid())
+  name          String
+  description   String
+  category      String
+  icon          String
+  url           String
+  openInNewTab  Boolean  @default(false)
+  authType      String   @default("sso") // "sso" | "own-login"
+  active        Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  access AppAccess[]
+
+  @@map("tbl_App")
+}
+
+// Maps to an Entra ID security group. Populated once group-claim wiring (Phase 4) lands.
+model AccessGroup {
+  id            String   @id @default(cuid())
+  name          String
+  entraGroupId  String?  @unique
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  access AppAccess[]
+
+  @@map("tbl_AccessGroup")
+}
+
+model AppAccess {
+  appId   String
+  groupId String
+
+  app   App         @relation(fields: [appId], references: [id], onDelete: Cascade)
+  group AccessGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([appId, groupId])
+  @@map("tbl_AppAccess")
+}
