@@ -4,10 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import type { App as AppRow } from "@prisma/client";
 import { createApp, updateApp, setAppActive } from "@/app/dashboard/access-manager/actions";
-import { catMeta, type CatKey } from "./portal-data";
 import { Icon, IconSprite } from "./icons";
-
-const CATS = Object.keys(catMeta) as CatKey[];
 
 const ICONS = [
   "analytics", "arrow", "bell", "billing", "check", "chevron", "clock", "cloud",
@@ -61,11 +58,6 @@ function AppFields({ app }: { app?: AppRow }) {
     <>
       <input name="name" placeholder="Name" defaultValue={app?.name} required />
       <input name="description" placeholder="Description" defaultValue={app?.description} required />
-      <select name="category" defaultValue={app?.category ?? CATS[0]} required>
-        {CATS.map((c) => (
-          <option key={c} value={c}>{catMeta[c]}</option>
-        ))}
-      </select>
       <select name="icon" defaultValue={app?.icon ?? ICONS[0]} required>
         {ICONS.map((i) => (
           <option key={i} value={i}>{i}</option>
@@ -103,7 +95,6 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Category</th>
             <th>Icon</th>
             <th>URL</th>
             <th>Status</th>
@@ -114,7 +105,7 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
           {apps.map((app) =>
             editingId === app.id ? (
               <tr key={app.id} className="am-row-editing">
-                <td colSpan={6}>
+                <td colSpan={5}>
                   <form
                     action={async (formData) => {
                       await updateApp(app.id, formData);
@@ -145,7 +136,6 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
                   </div>
                   <div className="am-desc">{app.description}</div>
                 </td>
-                <td>{catMeta[app.category as CatKey] ?? app.category}</td>
                 <td>{app.icon}</td>
                 <td className="am-url">
                   <a href={app.url} target="_blank" rel="noreferrer">{app.url}</a>
@@ -168,7 +158,7 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
           )}
           {apps.length === 0 && (
             <tr>
-              <td colSpan={6} className="am-empty">No apps yet — add the first one above.</td>
+              <td colSpan={5} className="am-empty">No apps yet — add the first one above.</td>
             </tr>
           )}
         </tbody>

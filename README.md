@@ -102,6 +102,7 @@ npm run dev                  # → http://localhost:3000
 - Dashboard: catalog จาก DB, ค้นหา (⌘K), filter หมวด/favorites/recent, toast, user menu, sign out
 - Access Manager (owner เท่านั้น): เพิ่ม / แก้ / ซ่อน-แสดงแอป ผ่าน Server Actions
 - อัปโหลด**โลโก้ของแอป**ได้ใน Access Manager (เก็บเป็น data URI ในคอลัมน์ `logo`, จำกัด 200KB + validate ฝั่ง server) — การ์ดใน dashboard และตารางแอดมินโชว์โลโก้จริง ไม่ใส่ก็ fallback เป็น icon เดิม
+- **Categories ซ่อนไว้ชั่วคราว** (ตัดสินใจ 2026-07-22: ยังไม่รู้ taxonomy จริง) — เอาออกจาก sidebar, ฟอร์ม, ตาราง และป้ายบนการ์ดแล้ว แต่คอลัมน์ `category` ยังอยู่ใน DB (แอปใหม่ได้ค่า default `data`) เปิดกลับมาได้โดยไม่ต้อง migrate
 - Prisma schema + migrations · script `db:check`
 - เอกสารขอ App Registration (`docs/`) · ดีไซน์ต้นแบบครบ (`design/`)
 

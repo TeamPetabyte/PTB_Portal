@@ -27,7 +27,9 @@ function readAppFields(formData: FormData) {
   return {
     name: String(formData.get("name") ?? "").trim(),
     description: String(formData.get("description") ?? "").trim(),
-    category: String(formData.get("category") ?? "").trim(),
+    // Category picker is hidden while the taxonomy is undecided; keep the
+    // column populated with a default so it can come back without a migration.
+    category: String(formData.get("category") ?? "").trim() || "data",
     icon: String(formData.get("icon") ?? "").trim(),
     logo: readLogo(formData),
     url: String(formData.get("url") ?? "").trim(),

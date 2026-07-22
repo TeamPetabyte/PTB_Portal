@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut as authSignOut } from "next-auth/react";
 import { Icon, IconSprite } from "./icons";
-import { catMeta, catIcon, type App, type CatKey } from "./portal-data";
+import { type App } from "./portal-data";
 
 const ACCENT = "#2f80d8";
 
@@ -14,7 +14,9 @@ export interface PortalUser {
   initials: string;
 }
 
-type Filter = "all" | "fav" | "recent" | CatKey;
+// Category filters are hidden until the team settles on a taxonomy
+// (the category column still exists in the DB).
+type Filter = "all" | "fav" | "recent";
 
 /** Portal / dashboard — ported from the original design (design/portal.html). */
 export default function PortalApp({
@@ -111,29 +113,16 @@ export default function PortalApp({
     { key: "recent" as Filter, label: "Recently Used", icon: "clock", count: recent.length },
   ];
 
-  const cats = (Object.keys(catMeta) as CatKey[]).map((k) => ({
-    key: k,
-    label: catMeta[k],
-    icon: catIcon[k],
-    colorClass: "c-" + k,
-    count: apps.filter((a) => a.cat === k).length,
-  }));
-
   const visibleApps = useMemo(() => {
     let base: typeof apps;
-    if (cat === "all") base = apps;
-    else if (cat === "fav") base = apps.filter((a) => favs.includes(a.id));
+    if (cat === "fav") base = apps.filter((a) => favs.includes(a.id));
     else if (cat === "recent")
       base = recent.map((id) => apps.find((a) => a.id === id)).filter(Boolean) as typeof apps;
-    else base = apps.filter((a) => a.cat === cat);
+    else base = apps;
 
     const q = query.trim().toLowerCase();
-    return q
-      ? base.filter((a) =>
-          (a.name + " " + a.desc + " " + catMeta[a.cat]).toLowerCase().includes(q),
-        )
-      : base;
-  }, [cat, query, favs, recent]);
+    return q ? base.filter((a) => (a.name + " " + a.desc).toLowerCase().includes(q)) : base;
+  }, [cat, query, favs, recent, apps]);
 
   const { title, sub } = useMemo(() => {
     const q = query.trim();
@@ -141,14 +130,12 @@ export default function PortalApp({
       const n = visibleApps.length;
       return { title: "Search results", sub: `${n} result${n === 1 ? "" : "s"} for “${q}”` };
     }
-    if (cat === "all") return { title: "All applications", sub: `${apps.length} apps available to you` };
     if (cat === "fav")
       return { title: "Favorites", sub: `${favs.length} pinned app${favs.length === 1 ? "" : "s"}` };
     if (cat === "recent")
       return { title: "Recently used", sub: `Your most recent ${visibleApps.length} apps` };
-    const n = visibleApps.length;
-    return { title: catMeta[cat], sub: `${n} app${n === 1 ? "" : "s"} in ${catMeta[cat]}` };
-  }, [cat, query, favs, visibleApps]);
+    return { title: "All applications", sub: `${apps.length} apps available to you` };
+  }, [cat, query, favs, visibleApps, apps]);
 
   const emptyMsg = query.trim()
     ? `No apps match “${query.trim()}”. Try a different keyword or clear the search.`
@@ -179,19 +166,6 @@ export default function PortalApp({
               <Icon name={n.icon} className="navico" />
               <span className="lbl">{n.label}</span>
               <span className="count">{n.count}</span>
-            </button>
-          ))}
-
-          <div className="navlabel">Categories</div>
-          {cats.map((c) => (
-            <button
-              key={c.key}
-              className={`nav ${cat === c.key ? "on" : ""}`}
-              onClick={() => setCat(c.key)}
-            >
-              <Icon name={c.icon} className={`navico ${c.colorClass}`} />
-              <span className="lbl">{c.label}</span>
-              <span className="count">{c.count}</span>
             </button>
           ))}
 
@@ -304,7 +278,6 @@ export default function PortalApp({
                       </div>
                       <div className="card-d">{app.desc}</div>
                       <div className="card-foot">
-                        <span className="tag">{catMeta[app.cat]}</span>
                         <span className="open">
                           Open
                           <Icon name="arrow" className="ic14" />
