@@ -89,6 +89,9 @@ html, body { margin: 0; padding: 0; }
 .nav .lbl { flex: 1; }
 .count { font-size: 12px; color: var(--ink3); font-weight: 600; background: #f1f4f9; padding: 1px 8px; border-radius: 999px; }
 .nav.on .count { background: color-mix(in srgb,var(--accent) 18%,#fff); color: var(--accent); }
+.admin-btn { display: flex; align-items: center; gap: 10px; margin: 4px 8px 0; padding: 12px 14px; border-radius: 11px; background: var(--accent); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: -.01em; text-decoration: none; transition: .15s; box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--accent) 65%, transparent); }
+.admin-btn:hover { transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 10px 22px -8px color-mix(in srgb, var(--accent) 75%, transparent); }
+.admin-btn-arrow { margin-left: auto; opacity: .85; }
 .side-foot { margin-top: auto; padding-top: 18px; }
 .support { background: linear-gradient(160deg,#f6f8fb,#eef2f8); border: 1px solid var(--line2); border-radius: 13px; padding: 15px; }
 .support-t { font-size: 13.5px; font-weight: 700; }

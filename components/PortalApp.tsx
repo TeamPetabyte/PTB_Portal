@@ -198,9 +198,10 @@ export default function PortalApp({
           {isOwner && (
             <>
               <div className="navlabel">Admin</div>
-              <Link href="/dashboard/access-manager" className="nav">
-                <Icon name="shield" className="navico" />
-                <span className="lbl">Access Manager</span>
+              <Link href="/dashboard/access-manager" className="admin-btn">
+                <Icon name="shield" className="ic18" />
+                <span>Manage apps</span>
+                <Icon name="arrow" className="ic14 admin-btn-arrow" />
               </Link>
             </>
           )}
