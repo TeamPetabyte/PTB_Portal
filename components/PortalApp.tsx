@@ -291,8 +291,12 @@ export default function PortalApp({
                       >
                         <Icon name={faved ? "star-f" : "star"} className="ic18" />
                       </button>
-                      <div className={`tile t-${app.cat}`}>
-                        <Icon name={app.icon} className="ic24" />
+                      <div className={`tile t-${app.cat}${app.logo ? " haslogo" : ""}`}>
+                        {app.logo ? (
+                          <img src={app.logo} alt="" className="tile-img" />
+                        ) : (
+                          <Icon name={app.icon} className="ic24" />
+                        )}
                       </div>
                       <div>
                         <div className="card-t">{app.name}</div>

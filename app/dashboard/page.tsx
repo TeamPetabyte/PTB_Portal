@@ -33,6 +33,7 @@ export default async function Page() {
     name: row.name,
     cat: row.category as CatKey,
     icon: row.icon,
+    logo: row.logo,
     desc: row.description,
     url: row.url,
     openInNewTab: row.openInNewTab,

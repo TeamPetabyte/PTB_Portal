@@ -60,7 +60,7 @@ portalptb/
 
 | ตาราง | ใช้ทำอะไร |
 |---|---|
-| `tbl_App` | แอป 1 แถวต่อ 1 แอปใน catalog — name, category (`eng/fin/data/ops/ppl/sec`), icon, url, `openInNewTab`, `authType` (`sso`/`own-login`), `active`, `sortOrder` |
+| `tbl_App` | แอป 1 แถวต่อ 1 แอปใน catalog — name, category (`eng/fin/data/ops/ppl/sec`), icon, `logo` (data URI, nullable), url, `openInNewTab`, `authType` (`sso`/`own-login`), `active`, `sortOrder` |
 | `tbl_AccessGroup` | map กับ Entra security group (เตรียมไว้สำหรับ "A" — ยังไม่ใช้) |
 | `tbl_AppAccess` | join table แอป↔กลุ่ม — แอปไหนไม่มีแถว = ทุกคนเห็น (ยังไม่ใช้) |
 
@@ -101,6 +101,7 @@ npm run dev                  # → http://localhost:3000
 - Middleware กัน `/dashboard/*` · JWT session
 - Dashboard: catalog จาก DB, ค้นหา (⌘K), filter หมวด/favorites/recent, toast, user menu, sign out
 - Access Manager (owner เท่านั้น): เพิ่ม / แก้ / ซ่อน-แสดงแอป ผ่าน Server Actions
+- อัปโหลด**โลโก้ของแอป**ได้ใน Access Manager (เก็บเป็น data URI ในคอลัมน์ `logo`, จำกัด 200KB + validate ฝั่ง server) — การ์ดใน dashboard และตารางแอดมินโชว์โลโก้จริง ไม่ใส่ก็ fallback เป็น icon เดิม
 - Prisma schema + migrations · script `db:check`
 - เอกสารขอ App Registration (`docs/`) · ดีไซน์ต้นแบบครบ (`design/`)
 

@@ -12,12 +12,24 @@ async function requireOwner() {
   }
 }
 
+// Logo arrives as a data URI from the client-side file reader (or stays "").
+// Only image data URIs / http(s) URLs are stored; anything else becomes null.
+const MAX_LOGO_CHARS = 400_000; // ~300KB of base64 image data
+
+function readLogo(formData: FormData): string | null {
+  const raw = String(formData.get("logo") ?? "").trim();
+  if (!raw || raw.length > MAX_LOGO_CHARS) return null;
+  if (!raw.startsWith("data:image/") && !/^https?:\/\//.test(raw)) return null;
+  return raw;
+}
+
 function readAppFields(formData: FormData) {
   return {
     name: String(formData.get("name") ?? "").trim(),
     description: String(formData.get("description") ?? "").trim(),
     category: String(formData.get("category") ?? "").trim(),
     icon: String(formData.get("icon") ?? "").trim(),
+    logo: readLogo(formData),
     url: String(formData.get("url") ?? "").trim(),
   };
 }

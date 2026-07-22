@@ -14,6 +14,7 @@ model App {
   description   String
   category      String
   icon          String
+  logo          String? // app logo as data URI (uploaded in Access Manager); falls back to `icon` when null
   url           String
   openInNewTab  Boolean  @default(false)
   authType      String   @default("sso") // "sso" | "own-login"

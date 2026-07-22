@@ -130,6 +130,8 @@ html, body { margin: 0; padding: 0; }
 .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 19px; cursor: pointer; transition: .17s; display: flex; flex-direction: column; gap: 13px; text-align: left; min-height: 158px; }
 .card:hover { border-color: #cdd7e7; box-shadow: 0 12px 30px -16px rgba(15,23,42,.3); transform: translateY(-3px); }
 .tile { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex: none; }
+.tile.haslogo { background: #fff; border: 1px solid var(--line); }
+.tile-img { width: 30px; height: 30px; object-fit: contain; }
 .t-eng { background: #eef2ff; color: #4f46e5; } .t-fin { background: #ecfdf5; color: #059669; } .t-data { background: #eff6ff; color: #2563eb; } .t-ops { background: #fff7ed; color: #ea580c; } .t-ppl { background: #fdf2f8; color: #db2777; } .t-sec { background: #fef2f2; color: #dc2626; }
 .c-eng { color: #4f46e5; } .c-fin { color: #059669; } .c-data { color: #2563eb; } .c-ops { color: #ea580c; } .c-ppl { color: #db2777; } .c-sec { color: #dc2626; }
 .card-t { font-weight: 700; font-size: 15.5px; letter-spacing: -.02em; }
@@ -167,7 +169,11 @@ html, body { margin: 0; padding: 0; }
 .am-back:hover { color: var(--accent); }
 .am-back-ico { transform: rotate(180deg); }
 
-.am-addform, .am-editform { display: grid; grid-template-columns: 1.2fr 1.6fr .9fr .9fr 1.2fr auto; gap: 10px; align-items: center; }
+.am-addform, .am-editform { display: grid; grid-template-columns: 1.2fr 1.6fr .8fr .8fr auto 1.1fr auto; gap: 10px; align-items: center; }
+.am-logo { display: flex; align-items: center; gap: 8px; }
+.am-logo-preview { width: 30px; height: 30px; object-fit: contain; border-radius: 7px; background: #fff; border: 1px solid var(--line); flex: none; }
+.am-logo-btn { display: inline-flex; align-items: center; }
+.am-name-logo { width: 18px; height: 18px; object-fit: contain; flex: none; }
 .am-addform { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 24px; }
 .am-editform { padding: 12px 0; }
 .am-editform-actions { display: flex; gap: 8px; }

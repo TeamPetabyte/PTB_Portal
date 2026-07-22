@@ -16,6 +16,46 @@ const ICONS = [
   "settings", "shield", "star", "star-f", "user",
 ];
 
+const MAX_LOGO_BYTES = 200 * 1024;
+
+/** Upload an app logo (stored as a data URI); falls back to the icon when empty. */
+function LogoField({ initial }: { initial?: string | null }) {
+  const [logo, setLogo] = useState(initial ?? "");
+
+  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      alert("Please choose an image file (PNG, SVG, JPG…).");
+      return;
+    }
+    if (file.size > MAX_LOGO_BYTES) {
+      alert("Logo file must be 200KB or smaller.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setLogo(String(reader.result ?? ""));
+    reader.readAsDataURL(file);
+  }
+
+  return (
+    <div className="am-logo">
+      <input type="hidden" name="logo" value={logo} />
+      {logo && <img src={logo} alt="Logo preview" className="am-logo-preview" />}
+      <label className="am-btn am-logo-btn">
+        {logo ? "Change logo" : "Upload logo"}
+        <input type="file" accept="image/*" onChange={onFile} style={{ display: "none" }} />
+      </label>
+      {logo && (
+        <button type="button" className="am-btn" onClick={() => setLogo("")} title="Remove logo">
+          ✕
+        </button>
+      )}
+    </div>
+  );
+}
+
 function AppFields({ app }: { app?: AppRow }) {
   return (
     <>
@@ -31,6 +71,7 @@ function AppFields({ app }: { app?: AppRow }) {
           <option key={i} value={i}>{i}</option>
         ))}
       </select>
+      <LogoField initial={app?.logo} />
       <input name="url" type="url" placeholder="https://…" defaultValue={app?.url} required />
     </>
   );
@@ -95,7 +136,11 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
               <tr key={app.id} className={app.active ? "" : "am-row-inactive"}>
                 <td>
                   <div className="am-name">
-                    <Icon name={app.icon} className="ic18" />
+                    {app.logo ? (
+                      <img src={app.logo} alt="" className="am-name-logo" />
+                    ) : (
+                      <Icon name={app.icon} className="ic18" />
+                    )}
                     {app.name}
                   </div>
                   <div className="am-desc">{app.description}</div>

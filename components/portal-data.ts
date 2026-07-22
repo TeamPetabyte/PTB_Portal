@@ -10,6 +10,7 @@ export interface App {
   name: string;
   cat: CatKey;
   icon: string;
+  logo: string | null;
   desc: string;
   url: string;
   openInNewTab: boolean;
