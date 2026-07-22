@@ -29,8 +29,9 @@ export default function PortalApp({
   const USER = user;
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<Filter>("all");
-  const [favs, setFavs] = useState<string[]>(["sap", "analytics", "incident"]);
-  const [recent, setRecent] = useState<string[]>(["datahub", "monitor", "analytics", "sap"]);
+  const [favs, setFavs] = useState<string[]>([]);
+  const [recent, setRecent] = useState<string[]>([]);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -52,6 +53,36 @@ export default function PortalApp({
       clearTimeout(toastTimer.current);
     };
   }, []);
+
+  // Favorites / recently-used persist per user, per browser (localStorage).
+  const prefsKey = (name: string) => `ptb_${name}_v1:${USER.email}`;
+
+  useEffect(() => {
+    const validIds = new Set(apps.map((a) => a.id));
+    const load = (name: string): string[] => {
+      try {
+        const raw = JSON.parse(localStorage.getItem(prefsKey(name)) ?? "[]");
+        return Array.isArray(raw)
+          ? raw.filter((id): id is string => typeof id === "string" && validIds.has(id))
+          : [];
+      } catch {
+        return [];
+      }
+    };
+    setFavs(load("favs"));
+    setRecent(load("recent"));
+    setPrefsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    try {
+      localStorage.setItem(prefsKey("favs"), JSON.stringify(favs));
+      localStorage.setItem(prefsKey("recent"), JSON.stringify(recent));
+    } catch {
+      // Storage blocked (private mode / quota) — favorites simply won't persist.
+    }
+  }, [favs, recent, prefsLoaded]);
 
   function openApp(app: (typeof apps)[number]) {
     setRecent((r) => [app.id, ...r.filter((x) => x !== app.id)].slice(0, 8));
@@ -240,7 +271,7 @@ export default function PortalApp({
 
           <div className="content">
             <div className="eyebrow" suppressHydrationWarning>
-              {greeting()} · {dateStr()}
+              {greeting(USER.name)} · {dateStr()}
             </div>
             <h1 className="h-title">{title}</h1>
             <p className="h-sub">{sub}</p>
@@ -301,9 +332,10 @@ export default function PortalApp({
   );
 }
 
-function greeting() {
+function greeting(name: string) {
   const h = new Date().getHours();
-  return `${h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"}, Jordan`;
+  const first = name.split(" ")[0] || name;
+  return `${h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"}, ${first}`;
 }
 
 function dateStr() {

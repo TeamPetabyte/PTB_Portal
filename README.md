@@ -107,8 +107,8 @@ npm run dev                  # → http://localhost:3000
 ### ⬜ งานที่เหลือ (ไว้แบ่งกันทำ)
 
 1. **[Auth/Backend] wire "A" — สิทธิ์รายแอปตามกลุ่ม Entra** — เปิด groups claim (หรือ App Roles) ใน App Registration, อ่าน group จาก token, query `tbl_AppAccess` ตอน render dashboard แทนที่จะโชว์ทุกแอป (ตอนนี้ schema รองรับแล้วแต่ยังไม่มีโค้ดใช้) — มีคำถามค้างกับแอดมิน M365 ท้ายไฟล์ `docs/entra-app-registration-request.md`
-2. **[Frontend] greeting hardcode "Jordan"** — `PortalApp.tsx` ฟังก์ชัน `greeting()` ทักชื่อ "Jordan" ตายตัว ต้องใช้ชื่อ user จริงจาก session
-3. **[Frontend] favorites / recently-used ไม่ persist** — ค่าเริ่มต้น hardcode เป็น id จาก seed เก่า (`sap`, `analytics`, …) ซึ่งไม่ตรงกับ id จริงใน DB แล้ว และ refresh แล้วหาย — ต้องเก็บลง localStorage หรือ DB
+2. ~~**[Frontend] greeting hardcode "Jordan"**~~ ✅ แก้แล้ว (2026-07-22): ทักด้วยชื่อจริง (ชื่อแรก) ของ user จาก session
+3. ~~**[Frontend] favorites / recently-used ไม่ persist**~~ ✅ แก้แล้ว (2026-07-22): เก็บใน localStorage แยกตามอีเมลผู้ใช้ (คีย์ `ptb_favs_v1:<email>` / `ptb_recent_v1:<email>`), กรอง id ที่ไม่มีอยู่จริงใน catalog ออกตอนโหลด, ลบค่า default ปลอมแล้ว — ถ้าวันหน้าอยากให้ข้ามเครื่องได้ค่อยย้ายไปเก็บ DB
 4. **[Frontend] ปุ่มที่ยังเป็น UI เปล่า** — กระดิ่งแจ้งเตือน, Your profile, Settings, การ์ด "Request access" ยังกดแล้วไม่เกิดอะไร — ตัดสินใจว่าจะทำหรือถอดออกก่อน launch
 5. ~~**[Frontend] ข้อความ footer หน้า login** — เคลม "SOC 2 Type II · ISO 27001" มาจาก mockup~~ ✅ เอาออกแล้ว (2026-07-22 พร้อมงานเปลี่ยนหน้า login เป็นโลโก้ animation)
 6. **[Admin] Access Manager ยังขาด** — ลบแอป, จัดลำดับ (`sortOrder`), แก้ `openInNewTab` / `authType` จากฟอร์มไม่ได้
