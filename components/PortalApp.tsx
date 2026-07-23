@@ -48,6 +48,20 @@ export default function PortalApp({
 
   const searchRef = useRef<HTMLInputElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // Popups don't vanish the instant the pointer slips out — they get a short
+  // grace period, and coming back inside cancels the close.
+  const CLOSE_DELAY_MS = 500;
+
+  function delayedClose(close: () => void) {
+    clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(close, CLOSE_DELAY_MS);
+  }
+
+  function cancelClose() {
+    clearTimeout(closeTimer.current);
+  }
 
   // ⌘K / Ctrl+K focuses search, Esc closes the user menu.
   useEffect(() => {
@@ -66,6 +80,7 @@ export default function PortalApp({
     return () => {
       window.removeEventListener("keydown", onKey);
       clearTimeout(toastTimer.current);
+      clearTimeout(closeTimer.current);
     };
   }, []);
 
@@ -132,6 +147,7 @@ export default function PortalApp({
   const hasUnread = prefsLoaded && latestAnnounceAt > notifSeenAt;
 
   function openNotifications() {
+    cancelClose();
     const opening = !notifOpen;
     setNotifOpen(opening);
     setMenuOpen(false);
@@ -298,7 +314,11 @@ export default function PortalApp({
                   {hasUnread && <span className="dot" />}
                 </button>
                 {notifOpen && (
-                  <div className="menu notif-menu" onMouseLeave={() => setNotifOpen(false)}>
+                  <div
+                    className="menu notif-menu"
+                    onMouseEnter={cancelClose}
+                    onMouseLeave={() => delayedClose(() => setNotifOpen(false))}
+                  >
                     <div className="notif-h">Notifications</div>
                     {announcements.length === 0 ? (
                       <div className="notif-empty">
@@ -329,6 +349,7 @@ export default function PortalApp({
                 <button
                   className="userchip"
                   onClick={() => {
+                    cancelClose();
                     setMenuOpen((o) => !o);
                     setNotifOpen(false);
                   }}
@@ -338,7 +359,11 @@ export default function PortalApp({
                   <Icon name="chevron" className="ic16" />
                 </button>
                 {menuOpen && (
-                  <div className="menu" onMouseLeave={() => setMenuOpen(false)}>
+                  <div
+                    className="menu"
+                    onMouseEnter={cancelClose}
+                    onMouseLeave={() => delayedClose(() => setMenuOpen(false))}
+                  >
                     <div className="menu-h">
                       <span className="avatar lg">{USER.initials}</span>
                       <div>
@@ -349,6 +374,7 @@ export default function PortalApp({
                     <button
                       className="menu-i"
                       onClick={() => {
+                        cancelClose();
                         setMenuOpen(false);
                         setModal("profile");
                       }}
@@ -359,6 +385,7 @@ export default function PortalApp({
                     <button
                       className="menu-i"
                       onClick={() => {
+                        cancelClose();
                         setMenuOpen(false);
                         setModal("settings");
                       }}
@@ -435,7 +462,11 @@ export default function PortalApp({
 
       {modal === "profile" && (
         <div className="ov">
-          <div className="modal" onMouseLeave={() => setModal(null)}>
+          <div
+            className="modal"
+            onMouseEnter={cancelClose}
+            onMouseLeave={() => delayedClose(() => setModal(null))}
+          >
             <div className="modal-h">
               <span className="avatar lg">{USER.initials}</span>
               <div>
@@ -456,7 +487,11 @@ export default function PortalApp({
 
       {modal === "settings" && (
         <div className="ov">
-          <div className="modal" onMouseLeave={() => setModal(null)}>
+          <div
+            className="modal"
+            onMouseEnter={cancelClose}
+            onMouseLeave={() => delayedClose(() => setModal(null))}
+          >
             <div className="modal-t">Settings</div>
             <div className="set-row">
               <div>
