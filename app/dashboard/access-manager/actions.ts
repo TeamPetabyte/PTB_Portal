@@ -24,6 +24,7 @@ function readLogo(formData: FormData): string | null {
 }
 
 function readAppFields(formData: FormData) {
+  const authType = String(formData.get("authType") ?? "");
   return {
     name: String(formData.get("name") ?? "").trim(),
     description: String(formData.get("description") ?? "").trim(),
@@ -33,6 +34,8 @@ function readAppFields(formData: FormData) {
     icon: String(formData.get("icon") ?? "").trim(),
     logo: readLogo(formData),
     url: String(formData.get("url") ?? "").trim(),
+    openInNewTab: formData.get("openInNewTab") === "on",
+    authType: authType === "own-login" ? "own-login" : "sso",
   };
 }
 
@@ -66,6 +69,39 @@ export async function setAppActive(id: string, active: boolean) {
   await requireOwner();
 
   await prisma.app.update({ where: { id }, data: { active } });
+
+  revalidateCatalog();
+}
+
+export async function deleteApp(id: string) {
+  await requireOwner();
+
+  // AppAccess rows go with it (onDelete: Cascade in the schema).
+  await prisma.app.delete({ where: { id } });
+
+  revalidateCatalog();
+}
+
+export async function moveApp(id: string, direction: "up" | "down") {
+  await requireOwner();
+
+  const apps = await prisma.app.findMany({
+    orderBy: { sortOrder: "asc" },
+    select: { id: true },
+  });
+  const from = apps.findIndex((a) => a.id === id);
+  const to = direction === "up" ? from - 1 : from + 1;
+  if (from < 0 || to < 0 || to >= apps.length) return;
+
+  const order = [...apps];
+  [order[from], order[to]] = [order[to], order[from]];
+
+  // Reindex the whole list so duplicate/legacy sortOrder values self-heal.
+  await prisma.$transaction(
+    order.map((a, idx) =>
+      prisma.app.update({ where: { id: a.id }, data: { sortOrder: idx + 1 } }),
+    ),
+  );
 
   revalidateCatalog();
 }

@@ -114,8 +114,8 @@ npm run dev                  # → http://localhost:3000
 
 > **ข้อ 7 (สิทธิ์รายแอป) จงใจวางรองสุดท้าย** — ต้องรอประสานแอดมิน M365 · **ข้อ 8 (deploy) เป็นขั้นสุดท้าย** เริ่มเมื่อ Winn สั่ง — ทั้งนี้ส่งใบขอ groups claim ให้แอดมินได้ตั้งแต่วันนี้ การรอคำตอบไม่ block งานข้ออื่น
 
-1. **[Admin] Access Manager ส่วนที่ขาด** — ลบแอป, จัดลำดับ (`sortOrder`), แก้ `openInNewTab` / `authType` จากฟอร์ม (M)
-2. **[Frontend] ปุ่มที่ยังเป็น UI เปล่า** — กระดิ่งแจ้งเตือน, Your profile, Settings, การ์ด "Request access" — ตัดสินใจทำจริงหรือถอดออกก่อนเปิดใช้ (S–M)
+1. ~~**[Admin] Access Manager ส่วนที่ขาด**~~ ✅ เสร็จ (2026-07-23): ลบแอป (มี confirm), ปุ่ม ↑↓ จัดลำดับ (reindex `sortOrder` อัตโนมัติ), ตั้ง `openInNewTab` + `authType` จากฟอร์มได้แล้ว
+2. ~~**[Frontend] ปุ่มที่ยังเป็น UI เปล่า**~~ ✅ เสร็จ (2026-07-23) ตามที่ Winn เคาะ: กระดิ่ง = เปิดแผงแจ้งเตือน (ตอนนี้ empty state รอระบบแจ้งเตือนจริง), Your profile = modal ข้อมูลบัญชีจาก Entra, Settings = modal + ตั้งค่า display density ใช้ได้จริง (persist localStorage), การ์ด "Request access" = **ถอดออก** (การจัดการเป็นหน้าที่ super admin ในแอป)
 3. **[Quality] Error boundary** — กัน `/dashboard` พังทั้งหน้าเมื่อ DB ล่ม + หน้า fallback (M)
 4. **[Quality] Tests + ESLint** — เริ่มเทสต์จาก `access/policy.ts` (pure function รอไว้แล้ว) + ตั้งค่า ESLint (S–M)
 5. **[Frontend·เสริม] ฟีเจอร์จาก design ล่าสุด** (เลือกทำเป็นชิ้นได้) — dark mode, ⌘K command palette, จุดสถานะแอป, ลาก favorites จัดลำดับ, card tilt — spec CSS/logic มีแล้วใน `design/login.html` (M–L)

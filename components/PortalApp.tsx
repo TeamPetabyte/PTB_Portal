@@ -35,6 +35,9 @@ export default function PortalApp({
   const [recent, setRecent] = useState<string[]>([]);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [modal, setModal] = useState<null | "profile" | "settings">(null);
+  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
   const [toast, setToast] = useState<string | null>(null);
 
   const searchRef = useRef<HTMLInputElement>(null);
@@ -47,7 +50,11 @@ export default function PortalApp({
         e.preventDefault();
         searchRef.current?.focus();
       }
-      if (e.key === "Escape") setMenuOpen(false);
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        setNotifOpen(false);
+        setModal(null);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -73,8 +80,22 @@ export default function PortalApp({
     };
     setFavs(load("favs"));
     setRecent(load("recent"));
+    try {
+      if (localStorage.getItem("ptb_density_v1") === "compact") setDensity("compact");
+    } catch {
+      // ignore — density just stays comfortable
+    }
     setPrefsLoaded(true);
   }, []);
+
+  function setDensityPref(next: "comfortable" | "compact") {
+    setDensity(next);
+    try {
+      localStorage.setItem("ptb_density_v1", next);
+    } catch {
+      // ignore
+    }
+  }
 
   useEffect(() => {
     if (!prefsLoaded) return;
@@ -142,7 +163,7 @@ export default function PortalApp({
     : "There are no apps in this view yet.";
 
   return (
-    <div className="root ui" style={{ ["--accent" as string]: ACCENT }}>
+    <div className={`root ui${density === "compact" ? " dense" : ""}`} style={{ ["--accent" as string]: ACCENT }}>
       <IconSprite />
       <div className="dash">
         <aside className="side">
@@ -180,16 +201,6 @@ export default function PortalApp({
             </>
           )}
 
-          <div className="side-foot">
-            <div className="support">
-              <div className="support-t">Need a new app?</div>
-              <div className="support-p">Request access or onboard a tool to the portal.</div>
-              <span className="support-a">
-                Request access
-                <Icon name="arrow" className="ic14" />
-              </span>
-            </div>
-          </div>
         </aside>
 
         <div className="main">
@@ -206,12 +217,35 @@ export default function PortalApp({
               <span className="kbd">⌘K</span>
             </div>
             <div className="topright">
-              <button className="iconbtn">
-                <Icon name="bell" className="ic18" />
-                <span className="dot" />
-              </button>
               <div className="userwrap">
-                <button className="userchip" onClick={() => setMenuOpen((o) => !o)}>
+                <button
+                  className="iconbtn"
+                  title="Notifications"
+                  onClick={() => {
+                    setNotifOpen((o) => !o);
+                    setMenuOpen(false);
+                  }}
+                >
+                  <Icon name="bell" className="ic18" />
+                </button>
+                {notifOpen && (
+                  <div className="menu notif-menu">
+                    <div className="notif-h">Notifications</div>
+                    <div className="notif-empty">
+                      <Icon name="bell" className="ic18" />
+                      <p>Nothing new right now. Updates about your apps will show up here.</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="userwrap">
+                <button
+                  className="userchip"
+                  onClick={() => {
+                    setMenuOpen((o) => !o);
+                    setNotifOpen(false);
+                  }}
+                >
                   <span className="avatar">{USER.initials}</span>
                   <span className="uname">{USER.name}</span>
                   <Icon name="chevron" className="ic16" />
@@ -225,11 +259,23 @@ export default function PortalApp({
                         <div className="menu-mail">{USER.email}</div>
                       </div>
                     </div>
-                    <button className="menu-i">
+                    <button
+                      className="menu-i"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setModal("profile");
+                      }}
+                    >
                       <Icon name="user" className="ic18" />
                       Your profile
                     </button>
-                    <button className="menu-i">
+                    <button
+                      className="menu-i"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setModal("settings");
+                      }}
+                    >
                       <Icon name="settings" className="ic18" />
                       Settings
                     </button>
@@ -299,6 +345,58 @@ export default function PortalApp({
           </div>
         </div>
       </div>
+
+      {modal === "profile" && (
+        <div className="ov" onClick={() => setModal(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-h">
+              <span className="avatar lg">{USER.initials}</span>
+              <div>
+                <div className="menu-name">{USER.name}</div>
+                <div className="menu-mail">{USER.email}</div>
+              </div>
+            </div>
+            <p className="modal-p">
+              Your account is managed by Microsoft Entra ID — name and email come
+              from the company directory. To change them, contact IT.
+            </p>
+            <div className="modal-actions">
+              <button className="am-btn" onClick={() => setModal(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modal === "settings" && (
+        <div className="ov" onClick={() => setModal(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-t">Settings</div>
+            <div className="set-row">
+              <div>
+                <div className="set-name">Display density</div>
+                <div className="set-desc">Compact fits more apps on screen.</div>
+              </div>
+              <div className="seg">
+                <button
+                  className={density === "comfortable" ? "on" : ""}
+                  onClick={() => setDensityPref("comfortable")}
+                >
+                  Comfortable
+                </button>
+                <button
+                  className={density === "compact" ? "on" : ""}
+                  onClick={() => setDensityPref("compact")}
+                >
+                  Compact
+                </button>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button className="am-btn" onClick={() => setModal(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast && (
         <div className="toast">

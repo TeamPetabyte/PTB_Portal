@@ -152,6 +152,22 @@ html, body { margin: 0; padding: 0; }
 .empty-p { font-size: 14px; color: var(--ink2); margin-top: 6px; max-width: 340px; line-height: 1.5; }
 .dense .grid { grid-template-columns: repeat(auto-fill,minmax(218px,1fr)); gap: 12px; }
 .dense .card { padding: 14px; gap: 9px; min-height: auto; }
+.notif-menu { width: 300px; }
+.notif-h { font-size: 13px; font-weight: 800; letter-spacing: -.01em; padding: 10px 12px 6px; }
+.notif-empty { display: flex; flex-direction: column; align-items: center; gap: 9px; color: var(--ink3); padding: 20px 18px 24px; text-align: center; }
+.notif-empty p { margin: 0; font-size: 13px; line-height: 1.5; }
+.ov { position: fixed; inset: 0; background: rgba(10,18,32,.45); backdrop-filter: blur(4px); z-index: 70; display: flex; align-items: center; justify-content: center; }
+.modal { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 70px -20px rgba(0,0,0,.4); width: min(420px, 92vw); padding: 22px; animation: rise .18s ease both; }
+.modal-t { font-size: 17px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 16px; }
+.modal-h { display: flex; align-items: center; gap: 12px; }
+.modal-p { font-size: 13.5px; color: var(--ink2); line-height: 1.55; margin: 14px 0 0; }
+.modal-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.set-name { font-size: 14px; font-weight: 700; }
+.set-desc { font-size: 12.5px; color: var(--ink3); margin-top: 2px; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; flex: none; }
+.seg button { font: inherit; font-size: 12.5px; font-weight: 600; padding: 7px 12px; border: none; background: var(--surface); color: var(--ink2); cursor: pointer; }
+.seg button.on { background: color-mix(in srgb, var(--accent) 12%, #fff); color: var(--accent); }
 .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 13px 20px; border-radius: 13px; font-weight: 600; font-size: 14px; display: flex; gap: 11px; align-items: center; box-shadow: 0 16px 40px -10px rgba(0,0,0,.45); z-index: 60; animation: toastin .25s cubic-bezier(.2,.8,.3,1) both; }
 .toast .tspin { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes toastin { from { opacity: 0; transform: translate(-50%,14px); } to { opacity: 1; transform: translate(-50%,0); } }
@@ -172,7 +188,11 @@ html, body { margin: 0; padding: 0; }
 .am-back:hover { color: var(--accent); }
 .am-back-ico { transform: rotate(180deg); }
 
-.am-addform, .am-editform { display: grid; grid-template-columns: 1.2fr 1.6fr .9fr auto 1.2fr auto; gap: 10px; align-items: center; }
+.am-addform, .am-editform { display: grid; grid-template-columns: 1.2fr 1.6fr .9fr auto 1.2fr; gap: 10px; align-items: center; }
+.am-opts { grid-column: 1 / -2; display: flex; align-items: center; gap: 14px; }
+.am-opts select { width: auto; }
+.am-check { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink2); font-weight: 600; cursor: pointer; }
+.am-check input { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
 .am-logo { display: flex; align-items: center; gap: 8px; }
 .am-logo-preview { width: 30px; height: 30px; object-fit: contain; border-radius: 7px; background: #fff; border: 1px solid var(--line); flex: none; }
 .am-logo-btn { display: inline-flex; align-items: center; }
@@ -189,6 +209,11 @@ html, body { margin: 0; padding: 0; }
 
 .am-btn { font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 8px 14px; cursor: pointer; white-space: nowrap; }
 .am-btn:hover { border-color: var(--ink3); }
+.am-btn:disabled { opacity: .35; cursor: default; }
+.am-btn:disabled:hover { border-color: var(--line); }
+.am-btn-ico { padding: 8px 10px; }
+.am-btn-danger { color: #dc2626; }
+.am-btn-danger:hover { border-color: #ef9a9a; background: #fef2f2; }
 .am-btn-primary { color: #fff; background: var(--accent); border-color: var(--accent); }
 .am-btn-primary:hover { opacity: .9; }
 

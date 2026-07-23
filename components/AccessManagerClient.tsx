@@ -3,7 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { App as AppRow } from "@prisma/client";
-import { createApp, updateApp, setAppActive } from "@/app/dashboard/access-manager/actions";
+import {
+  createApp,
+  updateApp,
+  setAppActive,
+  deleteApp,
+  moveApp,
+} from "@/app/dashboard/access-manager/actions";
 import { Icon, IconSprite } from "./icons";
 
 const ICONS = [
@@ -65,6 +71,16 @@ function AppFields({ app }: { app?: AppRow }) {
       </select>
       <LogoField initial={app?.logo} />
       <input name="url" type="url" placeholder="https://…" defaultValue={app?.url} required />
+      <div className="am-opts">
+        <select name="authType" defaultValue={app?.authType ?? "sso"}>
+          <option value="sso">Sign-in: SSO</option>
+          <option value="own-login">Sign-in: own login</option>
+        </select>
+        <label className="am-check">
+          <input type="checkbox" name="openInNewTab" defaultChecked={app?.openInNewTab} />
+          Open in new tab
+        </label>
+      </div>
     </>
   );
 }
@@ -102,7 +118,7 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
           </tr>
         </thead>
         <tbody>
-          {apps.map((app) =>
+          {apps.map((app, idx) =>
             editingId === app.id ? (
               <tr key={app.id} className="am-row-editing">
                 <td colSpan={5}>
@@ -146,12 +162,38 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
                   </span>
                 </td>
                 <td className="am-actions">
+                  <button
+                    className="am-btn am-btn-ico"
+                    title="Move up"
+                    disabled={idx === 0}
+                    onClick={() => moveApp(app.id, "up")}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    className="am-btn am-btn-ico"
+                    title="Move down"
+                    disabled={idx === apps.length - 1}
+                    onClick={() => moveApp(app.id, "down")}
+                  >
+                    ↓
+                  </button>
                   <button className="am-btn" onClick={() => setEditingId(app.id)}>Edit</button>
                   <form action={setAppActive.bind(null, app.id, !app.active)}>
                     <button type="submit" className="am-btn">
                       {app.active ? "Hide" : "Unhide"}
                     </button>
                   </form>
+                  <button
+                    className="am-btn am-btn-danger"
+                    onClick={async () => {
+                      if (confirm(`Delete "${app.name}" from the portal? This cannot be undone.`)) {
+                        await deleteApp(app.id);
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ),
