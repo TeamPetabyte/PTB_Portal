@@ -11,7 +11,14 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+    adapter: new PrismaPg({
+      connectionString: process.env.DATABASE_URL,
+      // The DB lives across the LAN — recycle idle sockets before the network
+      // silently kills them, and fail fast instead of hanging when it's down.
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 5_000,
+      keepAlive: true,
+    }),
   });
 
 if (process.env.NODE_ENV !== "production") {

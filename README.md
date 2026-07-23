@@ -119,7 +119,7 @@ npm run dev                  # → http://localhost:3000
 
 1. ~~**[Admin] Access Manager ส่วนที่ขาด**~~ ✅ เสร็จ (2026-07-23): ลบแอป (มี confirm), ปุ่ม ↑↓ จัดลำดับ (reindex `sortOrder` อัตโนมัติ), ตั้ง `openInNewTab` + `authType` จากฟอร์มได้แล้ว
 2. ~~**[Frontend] ปุ่มที่ยังเป็น UI เปล่า**~~ ✅ เสร็จ (2026-07-23) ตามที่ Winn เคาะ: กระดิ่ง = เปิดแผงแจ้งเตือน (ตอนนี้ empty state รอระบบแจ้งเตือนจริง), Your profile = modal ข้อมูลบัญชีจาก Entra, Settings = modal + ตั้งค่า display density ใช้ได้จริง (persist localStorage), การ์ด "Request access" = **ถอดออก** (การจัดการเป็นหน้าที่ super admin ในแอป)
-3. **[Quality] Error boundary** — กัน `/dashboard` พังทั้งหน้าเมื่อ DB ล่ม + หน้า fallback (M)
+3. ~~**[Quality] Error boundary**~~ ✅ เสร็จ (2026-07-23): `app/dashboard/error.tsx` — DB ล่มจะเห็นหน้าอธิบาย + ปุ่ม Try again แทนค้าง/พัง และ hardened DB pool ใน `db.ts` (recycle idle 30s, fail fast 5s, keepAlive) หลังเจอเคส pool ค้างทำ login เหมือนพัง
 4. **[Quality] Tests + ESLint** — เริ่มเทสต์จาก `access/policy.ts` (pure function รอไว้แล้ว) + ตั้งค่า ESLint (S–M)
 5. **[Frontend·เสริม] ฟีเจอร์จาก design ล่าสุด** (เลือกทำเป็นชิ้นได้) — ~~dark mode~~ ✅ (v1.2), เหลือ: ⌘K command palette, จุดสถานะแอป (รอ health endpoint ของแต่ละแอป), ลาก favorites จัดลำดับ, card tilt (M–L)
 6. **[Docs] เก็บตก design/README.md** — หมายเหตุ "Not yet wired" ล้าสมัย (auth/catalog ต่อเสร็จแล้ว) (S)

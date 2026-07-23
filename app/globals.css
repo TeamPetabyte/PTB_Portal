@@ -259,6 +259,13 @@ html, body { margin: 0; padding: 0; }
   .am-addform, .am-editform { grid-template-columns: 1fr; }
 }
 
+/* ---------- Error boundary (/dashboard) ---------- */
+.errpage { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); padding: 24px; }
+.errcard { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 60px -24px rgba(15,23,42,.25); padding: 34px 36px; max-width: 440px; text-align: center; animation: rise .2s ease both; }
+.erric { font-size: 34px; }
+.errt { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin-top: 12px; }
+.errp { font-size: 14px; color: var(--ink2); line-height: 1.6; margin: 10px 0 20px; }
+
 /* ---------- Dark theme (ported from design/login.html) ---------- */
 .root.dark { --bg: #0b1220; --surface: #101a2b; --line: #1f2c42; --line2: #1a2539; --ink: #e8eef7; --ink2: #9fb0c7; --ink3: #5d6f89; }
 .dark .nav:hover { background: #17233a; color: var(--ink); }
