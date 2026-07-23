@@ -109,6 +109,9 @@ export default function PortalApp({
       // ignore — defaults stay
     }
     setPrefsLoaded(true);
+    // Load once on mount only: re-running when `apps` or `prefsKey` change
+    // would clobber the user's in-session favorites/recents.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function setDensityPref(next: "comfortable" | "compact") {
@@ -170,6 +173,8 @@ export default function PortalApp({
     } catch {
       // Storage blocked (private mode / quota) — favorites simply won't persist.
     }
+    // prefsKey is derived from the (stable) signed-in email, so it's safe to omit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favs, recent, prefsLoaded]);
 
   function openApp(app: (typeof apps)[number]) {

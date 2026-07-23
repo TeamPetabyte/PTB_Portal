@@ -93,7 +93,6 @@ export default function LoginScreen() {
           </div>
           <div className="par" ref={parBRef}>
             <div className="hero-tile">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className="tile-mark" src="/petabyte-mark-hd.png" alt="" />
             </div>
           </div>
