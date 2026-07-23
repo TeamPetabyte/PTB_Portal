@@ -122,8 +122,10 @@ npm run dev                  # → http://localhost:3000
 2. ~~**[Frontend] ปุ่มที่ยังเป็น UI เปล่า**~~ ✅ เสร็จ (2026-07-23) ตามที่ Winn เคาะ: กระดิ่ง = เปิดแผงแจ้งเตือน (ตอนนี้ empty state รอระบบแจ้งเตือนจริง), Your profile = modal ข้อมูลบัญชีจาก Entra, Settings = modal + ตั้งค่า display density ใช้ได้จริง (persist localStorage), การ์ด "Request access" = **ถอดออก** (การจัดการเป็นหน้าที่ super admin ในแอป)
 3. ~~**[Quality] Error boundary**~~ ✅ เสร็จ (2026-07-23): `app/dashboard/error.tsx` — DB ล่มจะเห็นหน้าอธิบาย + ปุ่ม Try again แทนค้าง/พัง และ hardened DB pool ใน `db.ts` (recycle idle 30s, fail fast 5s, keepAlive) หลังเจอเคส pool ค้างทำ login เหมือนพัง
 4. ~~**[Quality] Tests + ESLint**~~ ✅ เสร็จ (2026-07-23): ESLint flat config (`npm run lint` สะอาด) + เทสต์ `access/policy.ts` 10 เคสผ่าน (`npm test`) — policy refactor ให้อ่าน env ตอนเรียกใช้เพื่อ testability
-5. **[Frontend·เสริม] ฟีเจอร์จาก design ล่าสุด** (เลือกทำเป็นชิ้นได้) — ~~dark mode~~ ✅ (v1.2), เหลือ: ⌘K command palette, จุดสถานะแอป (รอ health endpoint ของแต่ละแอป), ลาก favorites จัดลำดับ, card tilt (M–L)
-6. **[Docs] เก็บตก design/README.md** — หมายเหตุ "Not yet wired" ล้าสมัย (auth/catalog ต่อเสร็จแล้ว) (S)
+5. **[Frontend·เสริม] ฟีเจอร์จาก design ล่าสุด** — ~~dark mode~~ ✅ (v1.2) · ~~⌘K command palette~~ ✅ · ~~ลาก favorites จัดลำดับ~~ ✅ · ~~card tilt~~ ✅ (2026-07-23) — เหลือ: จุดสถานะแอป (รอ health endpoint ของแต่ละแอป)
+6. ~~**[Docs] เก็บตก design/README.md**~~ ✅ เสร็จ (2026-07-23)
+- **[ต้องตัดสินใจ] ภาษา UI** — ตอนนี้อังกฤษล้วน · จะทำไทย/อังกฤษ (i18n) ไหม? ยิ่งตัดสินใจเร็วยิ่งแก้น้อย (ถ้าเอา = งาน M–L แยกก้อน)
+- **[ต้องเทสต์กับ Winn] Mobile pass** — เปิดจากมือถือจริงผ่าน LAN IP ไล่ดู login/drawer/การ์ด/Access Manager/modal
 7. **[Auth·รองสุดท้าย] Wire "A" — สิทธิ์รายแอปตาม Entra groups** — รอแอดมิน M365 ทำตามใบขอ [docs/entra-groups-claim-request.md](docs/entra-groups-claim-request.md) → แล้วต่อโค้ด: อ่าน groups จาก token → กรองแอปด้วย `tbl_AppAccess` → UI ผูกกลุ่มใน Access Manager (~1–2 วัน) (L)
 8. **[Infra·สุดท้าย] Deployment** — ตามคู่มือ [docs/deployment.md](docs/deployment.md): เพิ่ม hostname ใน Cloudflare Tunnel เดิม + Redirect URI production ใน Azure + ตั้ง service บนเครื่องบริษัท (L)
 

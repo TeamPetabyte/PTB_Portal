@@ -29,10 +29,18 @@ needs to change, edit it here first**, then port the change into the React code.
 - Ink: `#0f1729` / `#5a6678` / `#94a0b3` · lines `#e6eaf1` / `#eef1f6`
 - Category colors: eng `#4f46e5`, fin `#059669`, data `#2563eb`, ops `#ea580c`, ppl `#db2777`, sec `#dc2626`
 
-## Not yet wired (prototype simulates these)
+## Wired since the prototype (kept here for history)
 
-- **Auth**: the "Continue with Microsoft Entra ID" button simulates sign-in then
-  redirects to `/dashboard`. Replace with NextAuth `signIn("microsoft-entra-id")`
-  (see TODO in `LoginScreen.tsx`) and `signOut()` (see TODO in `PortalApp.tsx`).
-- **App catalog**: `portal-data.ts` is static seed data; production should come
-  from an API filtered by the user's access (C+A).
+- **Auth** ✅ — the Microsoft button now calls NextAuth `signIn("microsoft-entra-id")`
+  and the menu calls `signOut()`; the "C" domain guard lives in `access/policy.ts`.
+- **App catalog** ✅ — apps come from Postgres (`prisma/schema.prisma`), managed in
+  the owner-only Access Manager. `portal-data.ts` keeps only the category
+  label/icon mapping. Per-app "A" access (Entra groups) is still pending.
+- **Categories** — hidden in the UI for now (taxonomy undecided); the `category`
+  column stays in the DB.
+
+## Beyond the original prototype (built later, no design file — code is the source)
+
+Dark mode, ⌘K command palette, notification bell + announcements, drag-to-reorder
+favorites, card tilt, and the mobile drawer were added after `login.html`. When
+changing these, edit the React/CSS directly; there is no separate prototype to sync.
