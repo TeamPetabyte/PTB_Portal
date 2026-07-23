@@ -1,5 +1,7 @@
 # คำขอ: เปิด Groups Claim + จัด Security Groups สำหรับ Petabyte Portal
 
+> 📘 **มีคู่มือฉบับลงมือทำทีละคลิกแล้ว** (พร้อมโครงกลุ่มที่ตกลงกัน 3 กลุ่ม: `PTB-ALLACCESS` / `PTB-USER` / `PTB-Projectlist` + checklist ส่งกลับ): **[entra-groups-setup-guide.md](entra-groups-setup-guide.md)** — แนะนำส่งไฟล์นั้นให้แอดมิน ไฟล์นี้เก็บไว้เป็นบริบท/เหตุผลประกอบ
+
 ส่งให้: ผู้ดูแล Microsoft 365 / Microsoft Entra ID ของบริษัท
 เกี่ยวกับ: App Registration **"Petabyte Portal"** (ตัวเดียวกับที่สร้างตามคำขอก่อนหน้า)
 เวลาที่ใช้โดยประมาณ: **10–15 นาที**

@@ -129,7 +129,7 @@ npm run dev                  # → http://localhost:3000
 6. ~~**[Docs] เก็บตก design/README.md**~~ ✅ เสร็จ (2026-07-23)
 - **[ต้องตัดสินใจ] ภาษา UI** — ตอนนี้อังกฤษล้วน · จะทำไทย/อังกฤษ (i18n) ไหม? ยิ่งตัดสินใจเร็วยิ่งแก้น้อย (ถ้าเอา = งาน M–L แยกก้อน)
 - **[ต้องเทสต์กับ Winn] Mobile pass** — เปิดจากมือถือจริงผ่าน LAN IP ไล่ดู login/drawer/การ์ด/Access Manager/modal
-7. **[Auth·รองสุดท้าย] Wire "A" — สิทธิ์รายแอปตาม Entra groups** — รอแอดมิน M365 ทำตามใบขอ [docs/entra-groups-claim-request.md](docs/entra-groups-claim-request.md) → แล้วต่อโค้ด: อ่าน groups จาก token → กรองแอปด้วย `tbl_AppAccess` → UI ผูกกลุ่มใน Access Manager (~1–2 วัน) (L)
+7. **[Auth·รองสุดท้าย] Wire "A" — สิทธิ์รายแอปตาม Entra groups** — ✉️ ส่ง**คู่มือแอดมินฉบับเต็ม** [docs/entra-groups-setup-guide.md](docs/entra-groups-setup-guide.md) (โครงกลุ่มที่ตกลง: `PTB-ALLACCESS` เห็นทุกแอป / `PTB-USER` แอปทั่วไป / `PTB-Projectlist` แอปโปรเจกต์พิเศษ) → รอ Object ID กลับมา → ต่อโค้ด: อ่าน groups จาก token → ALLACCESS bypass → กรองแอปด้วย `tbl_AppAccess` → UI ผูกกลุ่มใน Access Manager (~1–2 วัน) (L)
 8. **[Infra·สุดท้าย] Deployment** — ตามคู่มือ [docs/deployment.md](docs/deployment.md): เพิ่ม hostname ใน Cloudflare Tunnel เดิม + Redirect URI production ใน Azure + ตั้ง service บนเครื่องบริษัท (L)
 
 ## กติกาเรื่องดีไซน์
