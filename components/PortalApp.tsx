@@ -105,6 +105,20 @@ export default function PortalApp({
     }
   }
 
+  // Clicking anywhere outside the topbar popups closes them (the click on the
+  // other control still lands — nothing is blocked by a backdrop).
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (!t?.closest(".userwrap")) {
+        setMenuOpen(false);
+        setNotifOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", onDown);
+    return () => window.removeEventListener("mousedown", onDown);
+  }, []);
+
   function setThemePref(next: "light" | "dark") {
     setTheme(next);
     try {
@@ -284,7 +298,7 @@ export default function PortalApp({
                   {hasUnread && <span className="dot" />}
                 </button>
                 {notifOpen && (
-                  <div className="menu notif-menu">
+                  <div className="menu notif-menu" onMouseLeave={() => setNotifOpen(false)}>
                     <div className="notif-h">Notifications</div>
                     {announcements.length === 0 ? (
                       <div className="notif-empty">
@@ -324,7 +338,7 @@ export default function PortalApp({
                   <Icon name="chevron" className="ic16" />
                 </button>
                 {menuOpen && (
-                  <div className="menu">
+                  <div className="menu" onMouseLeave={() => setMenuOpen(false)}>
                     <div className="menu-h">
                       <span className="avatar lg">{USER.initials}</span>
                       <div>
@@ -420,8 +434,8 @@ export default function PortalApp({
       </div>
 
       {modal === "profile" && (
-        <div className="ov" onClick={() => setModal(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="ov">
+          <div className="modal" onMouseLeave={() => setModal(null)}>
             <div className="modal-h">
               <span className="avatar lg">{USER.initials}</span>
               <div>
@@ -441,8 +455,8 @@ export default function PortalApp({
       )}
 
       {modal === "settings" && (
-        <div className="ov" onClick={() => setModal(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="ov">
+          <div className="modal" onMouseLeave={() => setModal(null)}>
             <div className="modal-t">Settings</div>
             <div className="set-row">
               <div>

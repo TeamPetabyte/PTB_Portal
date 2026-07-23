@@ -165,8 +165,10 @@ html, body { margin: 0; padding: 0; }
 .notif-d { font-size: 11px; color: var(--ink3); font-weight: 600; margin-top: 5px; }
 .notif-empty { display: flex; flex-direction: column; align-items: center; gap: 9px; color: var(--ink3); padding: 20px 18px 24px; text-align: center; }
 .notif-empty p { margin: 0; font-size: 13px; line-height: 1.5; }
-.ov { position: fixed; inset: 0; background: rgba(10,18,32,.45); backdrop-filter: blur(4px); z-index: 70; display: flex; align-items: center; justify-content: center; }
-.modal { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 70px -20px rgba(0,0,0,.4); width: min(420px, 92vw); padding: 22px; animation: rise .18s ease both; }
+/* The overlay only centers the card — it lets clicks pass through so the rest
+   of the UI stays usable; the card closes itself when the pointer leaves it. */
+.ov { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.modal { pointer-events: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 80px -18px rgba(0,0,0,.5); width: min(420px, 92vw); padding: 22px; animation: rise .18s ease both; }
 .modal-t { font-size: 17px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 16px; }
 .modal-h { display: flex; align-items: center; gap: 12px; }
 .modal-p { font-size: 13.5px; color: var(--ink2); line-height: 1.55; margin: 14px 0 0; }
