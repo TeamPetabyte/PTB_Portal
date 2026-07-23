@@ -180,7 +180,7 @@ html, body { margin: 0; padding: 0; }
 }
 
 /* ---------- Access Manager ---------- */
-.am { max-width: 1080px; margin: 0 auto; padding: 40px 32px 80px; height: auto; overflow: visible; }
+.am { max-width: none; margin: 0; padding: 40px 40px 80px; height: auto; overflow: visible; }
 .am-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
 .am-title { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
 .am-sub { font-size: 14px; color: var(--ink2); margin: 6px 0 0; }
@@ -188,7 +188,7 @@ html, body { margin: 0; padding: 0; }
 .am-back:hover { color: var(--accent); }
 .am-back-ico { transform: rotate(180deg); }
 
-.am-addform, .am-editform { display: grid; grid-template-columns: 1.2fr 1.6fr .9fr auto 1.2fr; gap: 10px; align-items: center; }
+.am-addform, .am-editform { display: grid; grid-template-columns: 1.2fr 1.6fr auto 1.4fr; gap: 10px; align-items: center; }
 .am-newtab { grid-column: 1 / -2; }
 .am-check { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink2); font-weight: 600; cursor: pointer; white-space: nowrap; }
 .am-check input { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex: none; }
@@ -200,8 +200,8 @@ html, body { margin: 0; padding: 0; }
 .am-editform { padding: 12px 0; }
 .am-editform-actions { display: flex; gap: 8px; }
 
-.am-addform input, .am-addform select,
-.am-editform input, .am-editform select {
+.am-addform input:not([type="checkbox"]), .am-addform select,
+.am-editform input:not([type="checkbox"]), .am-editform select {
   font: inherit; font-size: 13px; color: var(--ink); background: var(--bg);
   border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; width: 100%;
 }

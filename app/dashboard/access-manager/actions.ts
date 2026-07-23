@@ -30,12 +30,12 @@ function readAppFields(formData: FormData) {
     // Category picker is hidden while the taxonomy is undecided; keep the
     // column populated with a default so it can come back without a migration.
     category: String(formData.get("category") ?? "").trim() || "data",
-    icon: String(formData.get("icon") ?? "").trim(),
     logo: readLogo(formData),
     url: String(formData.get("url") ?? "").trim(),
     openInNewTab: formData.get("openInNewTab") === "on",
-    // authType stays "sso" for every app — internal-only for now. The DB
-    // column keeps its default; bring a picker back if that ever changes.
+    // authType stays "sso" for every app — internal-only for now. The icon
+    // picker is gone too: logos cover recognition, `icon` only remains as
+    // the card fallback (existing rows keep theirs, new rows get "grid").
   };
 }
 
@@ -50,7 +50,7 @@ export async function createApp(formData: FormData) {
 
   const last = await prisma.app.findFirst({ orderBy: { sortOrder: "desc" } });
   await prisma.app.create({
-    data: { ...fields, sortOrder: (last?.sortOrder ?? 0) + 1 },
+    data: { ...fields, icon: "grid", sortOrder: (last?.sortOrder ?? 0) + 1 },
   });
 
   revalidateCatalog();

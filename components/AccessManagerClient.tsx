@@ -12,13 +12,6 @@ import {
 } from "@/app/dashboard/access-manager/actions";
 import { Icon, IconSprite } from "./icons";
 
-const ICONS = [
-  "analytics", "arrow", "bell", "billing", "check", "chevron", "clock", "cloud",
-  "code", "data", "directory", "docs", "grid", "hub", "incident", "lock",
-  "logout", "monitor", "package", "people", "receipt", "revenue", "search",
-  "settings", "shield", "star", "star-f", "user",
-];
-
 const MAX_LOGO_BYTES = 200 * 1024;
 
 /** Upload an app logo (stored as a data URI); falls back to the icon when empty. */
@@ -64,16 +57,11 @@ function AppFields({ app }: { app?: AppRow }) {
     <>
       <input name="name" placeholder="Name" defaultValue={app?.name} required />
       <input name="description" placeholder="Description" defaultValue={app?.description} required />
-      <select name="icon" defaultValue={app?.icon ?? ICONS[0]} required>
-        {ICONS.map((i) => (
-          <option key={i} value={i}>{i}</option>
-        ))}
-      </select>
       <LogoField initial={app?.logo} />
       <input name="url" type="url" placeholder="https://…" defaultValue={app?.url} required />
       <label className="am-check am-newtab">
         <input type="checkbox" name="openInNewTab" defaultChecked={app?.openInNewTab} />
-        Open in new tab
+        <span>Open in new tab</span>
       </label>
     </>
   );
@@ -105,7 +93,6 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Icon</th>
             <th>URL</th>
             <th>Status</th>
             <th />
@@ -115,7 +102,7 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
           {apps.map((app, idx) =>
             editingId === app.id ? (
               <tr key={app.id} className="am-row-editing">
-                <td colSpan={5}>
+                <td colSpan={4}>
                   <form
                     action={async (formData) => {
                       await updateApp(app.id, formData);
@@ -146,7 +133,6 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
                   </div>
                   <div className="am-desc">{app.description}</div>
                 </td>
-                <td>{app.icon}</td>
                 <td className="am-url">
                   <a href={app.url} target="_blank" rel="noreferrer">{app.url}</a>
                 </td>
@@ -194,7 +180,7 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
           )}
           {apps.length === 0 && (
             <tr>
-              <td colSpan={5} className="am-empty">No apps yet — add the first one above.</td>
+              <td colSpan={4} className="am-empty">No apps yet — add the first one above.</td>
             </tr>
           )}
         </tbody>
