@@ -113,6 +113,7 @@ npm run dev                  # → http://localhost:3000
 - **v1.2**: ประกาศบริษัท (โพสต์จาก Access Manager → แสดงในกระดิ่ง พร้อมจุดแดงแจ้งเรื่องใหม่ต่อผู้ใช้) · usage logging ทุกการเปิดแอป + คอลัมน์ Opens·30d · เมนูมือถือแบบ drawer · **dark mode** ใน Settings (ครอบ dashboard + Access Manager) · research ฟีเจอร์ portal (`docs/portal-feature-research.md`)
 - **v1.3**: popup ทุกใบปิดเองเมื่อเมาส์ออก (grace 1 วิ) และไม่บล็อกการคลิกหน้าจอ · error boundary + DB pool hygiene (แก้เคส login เหมือนค้างเพราะสาย DB ตาย) · ฟอร์ม Edit วางตรงคอลัมน์ตาราง · แก้ชื่อ user จมใน dark theme · favicon เป็นโลโก้ TB
 - **v1.4**: ESLint + unit tests (`access/policy` 10 เคส) · ⌘K command palette · ลากจัดลำดับ All Apps + Favorites (ลำดับส่วนตัวต่อผู้ใช้) · card tilt 3D · เก็บตกเอกสาร design
+- **v1.5**: แก้ไขประกาศได้ใน Access Manager · **i18n ไทย/อังกฤษทั้ง portal** (default EN, ปุ่มสลับซ้ายล่าง sidebar, เก็บใน localStorage) — แปลครบ login, dashboard, Access Manager, error page
 - Prisma schema + migrations · script `db:check`
 - เอกสารขอ App Registration (`docs/`) · ดีไซน์ต้นแบบครบ (`design/`)
 
