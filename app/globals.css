@@ -132,6 +132,9 @@ html, body { margin: 0; padding: 0; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(266px,1fr)); gap: 16px; margin-top: 24px; }
 .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 19px; cursor: pointer; transition: .17s; display: flex; flex-direction: column; gap: 13px; text-align: left; min-height: 158px; }
 .card:hover { border-color: #cdd7e7; box-shadow: 0 12px 30px -16px rgba(15,23,42,.3); transform: translateY(-3px); }
+.card.draggable { cursor: grab; }
+.card.draggable:active { cursor: grabbing; }
+.card.dragover { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
 .tile { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex: none; }
 .tile.haslogo { background: #fff; border: 1px solid var(--line); }
 .tile-img { width: 30px; height: 30px; object-fit: contain; }

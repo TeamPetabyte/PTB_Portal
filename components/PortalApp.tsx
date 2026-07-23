@@ -52,6 +52,10 @@ export default function PortalApp({
   const [palIndex, setPalIndex] = useState(0);
   const palInputRef = useRef<HTMLInputElement>(null);
 
+  // Drag-to-reorder favorites.
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
+
   const searchRef = useRef<HTMLInputElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -213,6 +217,19 @@ export default function PortalApp({
     setFavs((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id]));
   }
 
+  // Move the dragged favorite to sit where the drop target currently is.
+  function reorderFav(targetId: string) {
+    if (!dragId || dragId === targetId) return;
+    setFavs((f) => {
+      const next = f.filter((x) => x !== dragId);
+      const at = next.indexOf(targetId);
+      next.splice(at < 0 ? next.length : at, 0, dragId);
+      return next;
+    });
+    setDragId(null);
+    setOverId(null);
+  }
+
   function signOut() {
     authSignOut({ callbackUrl: "/" });
   }
@@ -262,7 +279,13 @@ export default function PortalApp({
       return { title: "Search results", sub: `${n} result${n === 1 ? "" : "s"} for “${q}”` };
     }
     if (cat === "fav")
-      return { title: "Favorites", sub: `${favs.length} pinned app${favs.length === 1 ? "" : "s"}` };
+      return {
+        title: "Favorites",
+        sub:
+          favs.length > 1
+            ? `${favs.length} pinned apps · drag to reorder`
+            : `${favs.length} pinned app${favs.length === 1 ? "" : "s"}`,
+      };
     if (cat === "recent")
       return { title: "Recently used", sub: `Your most recent ${visibleApps.length} apps` };
     return { title: "All applications", sub: `${apps.length} apps available to you` };
@@ -455,8 +478,43 @@ export default function PortalApp({
               <div className="grid">
                 {visibleApps.map((app) => {
                   const faved = favs.includes(app.id);
+                  const canDrag = cat === "fav" && !query.trim();
                   return (
-                    <div key={app.id} className="card" onClick={() => openApp(app)}>
+                    <div
+                      key={app.id}
+                      className={`card${canDrag ? " draggable" : ""}${
+                        overId === app.id && dragId ? " dragover" : ""
+                      }`}
+                      onClick={() => openApp(app)}
+                      draggable={canDrag}
+                      onDragStart={canDrag ? () => setDragId(app.id) : undefined}
+                      onDragOver={
+                        canDrag
+                          ? (e) => {
+                              if (dragId && dragId !== app.id) {
+                                e.preventDefault();
+                                if (overId !== app.id) setOverId(app.id);
+                              }
+                            }
+                          : undefined
+                      }
+                      onDrop={
+                        canDrag
+                          ? (e) => {
+                              e.preventDefault();
+                              reorderFav(app.id);
+                            }
+                          : undefined
+                      }
+                      onDragEnd={
+                        canDrag
+                          ? () => {
+                              setDragId(null);
+                              setOverId(null);
+                            }
+                          : undefined
+                      }
+                    >
                       <button
                         className={`fav ${faved ? "on" : ""}`}
                         onClick={(e) => {
