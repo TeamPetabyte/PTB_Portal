@@ -218,6 +218,9 @@ html, body { margin: 0; padding: 0; }
 
 .am-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
 .am-table th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink3); padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.am-table th:first-child { width: 26%; }
+.am-table th:nth-child(3) { width: 120px; }
+.am-table th:last-child { width: 1%; }
 .am-table td { padding: 14px 16px; border-bottom: 1px solid var(--line2); font-size: 13px; vertical-align: top; }
 .am-table tr:last-child td { border-bottom: none; }
 .am-row-inactive { opacity: .5; }
@@ -225,7 +228,7 @@ html, body { margin: 0; padding: 0; }
 .am-desc { color: var(--ink2); margin-top: 3px; }
 .am-url a { color: var(--accent); text-decoration: none; word-break: break-all; }
 .am-url a:hover { text-decoration: underline; }
-.am-actions { display: flex; gap: 8px; }
+.am-actions { display: flex; gap: 8px; justify-content: flex-end; }
 .am-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
 .am-badge-on { color: #059669; background: #ecfdf5; }
 .am-badge-off { color: var(--ink3); background: var(--line2); }
