@@ -94,6 +94,18 @@ export async function createAnnouncement(formData: FormData) {
   revalidateCatalog();
 }
 
+export async function updateAnnouncement(id: string, formData: FormData) {
+  await requireOwner();
+
+  const title = String(formData.get("title") ?? "").trim();
+  const body = String(formData.get("body") ?? "").trim();
+  if (!title || !body) return;
+
+  await prisma.announcement.update({ where: { id }, data: { title, body } });
+
+  revalidateCatalog();
+}
+
 export async function deleteAnnouncement(id: string) {
   await requireOwner();
 

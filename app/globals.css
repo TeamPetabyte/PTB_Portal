@@ -233,6 +233,7 @@ html, body { margin: 0; padding: 0; }
 .am-name-logo { width: 18px; height: 18px; object-fit: contain; flex: none; }
 .am-addform { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 24px; }
 .am-edit-stack { display: flex; flex-direction: column; gap: 8px; }
+.am-editform-actions { display: flex; gap: 8px; }
 .am-row-editing td { background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
 
 .am-addform input:not([type="checkbox"]), .am-addform select,

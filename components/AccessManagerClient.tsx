@@ -10,6 +10,7 @@ import {
   deleteApp,
   moveApp,
   createAnnouncement,
+  updateAnnouncement,
   deleteAnnouncement,
 } from "@/app/dashboard/access-manager/actions";
 import { Icon, IconSprite } from "./icons";
@@ -81,6 +82,7 @@ export default function AccessManagerClient({
   announcements?: Announcement[];
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingAnnId, setEditingAnnId] = useState<string | null>(null);
   const [dark, setDark] = useState(false);
 
   // Follow the theme the user picked on the dashboard (Settings modal).
@@ -278,33 +280,61 @@ export default function AccessManagerClient({
           </tr>
         </thead>
         <tbody>
-          {announcements.map((a) => (
-            <tr key={a.id}>
-              <td>
-                <div className="am-name">{a.title}</div>
-                <div className="am-desc">{a.body}</div>
-              </td>
-              <td>
-                {new Date(a.createdAt).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </td>
-              <td className="am-actions">
-                <button
-                  className="am-btn am-btn-danger"
-                  onClick={async () => {
-                    if (confirm(`Delete announcement "${a.title}"?`)) {
-                      await deleteAnnouncement(a.id);
-                    }
-                  }}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
+          {announcements.map((a) =>
+            editingAnnId === a.id ? (
+              <tr key={a.id} className="am-row-editing">
+                <td colSpan={3}>
+                  <form
+                    action={async (formData) => {
+                      await updateAnnouncement(a.id, formData);
+                      setEditingAnnId(null);
+                    }}
+                    className="am-annform"
+                  >
+                    <input name="title" defaultValue={a.title} required />
+                    <input name="body" defaultValue={a.body} required />
+                    <div className="am-editform-actions">
+                      <button type="submit" className="am-btn am-btn-primary">Save</button>
+                      <button
+                        type="button"
+                        className="am-btn"
+                        onClick={() => setEditingAnnId(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </td>
+              </tr>
+            ) : (
+              <tr key={a.id}>
+                <td>
+                  <div className="am-name">{a.title}</div>
+                  <div className="am-desc">{a.body}</div>
+                </td>
+                <td>
+                  {new Date(a.createdAt).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </td>
+                <td className="am-actions">
+                  <button className="am-btn" onClick={() => setEditingAnnId(a.id)}>Edit</button>
+                  <button
+                    className="am-btn am-btn-danger"
+                    onClick={async () => {
+                      if (confirm(`Delete announcement "${a.title}"?`)) {
+                        await deleteAnnouncement(a.id);
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ),
+          )}
           {announcements.length === 0 && (
             <tr>
               <td colSpan={3} className="am-empty">
