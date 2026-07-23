@@ -15,7 +15,7 @@
 ## โมเดลสิทธิ์ "C+A"
 
 - **C (corporate)** — login ได้เฉพาะอีเมลโดเมนพนักงาน (`EMPLOYEE_DOMAINS` เช่น `petabyte.co.th`) เช็คใน `signIn` callback (`auth.ts` → `access/policy.ts`) ถ้าไม่ตั้งค่าโดเมนไว้เลยระบบจะ **fail closed** (ไม่ให้ใครเข้า)
-- **A (authorization)** — สิทธิ์รายแอปตาม Entra security group ผ่านตาราง `tbl_AccessGroup` / `tbl_AppAccess` — **ยังไม่ได้ wire** (ดู "งานที่เหลือ" ข้อ 1) ตอนนี้ทุกคนที่ผ่าน C เห็นทุกแอปที่ active
+- **A (authorization)** — สิทธิ์รายแอปตาม Entra security group ผ่านตาราง `tbl_AccessGroup` / `tbl_AppAccess` — **ยังไม่ได้ wire** (ดู roadmap ข้อ 7 — วางไว้รองสุดท้าย รอประสานแอดมิน M365) ตอนนี้ทุกคนที่ผ่าน C เห็นทุกแอปที่ active
 - **Owner** — อีเมลใน `OWNER_EMAILS` เห็นทุกแอป + เข้า **Access Manager** (`/dashboard/access-manager`) เพื่อจัดการ catalog ได้
 
 ## Flow การทำงาน
@@ -103,23 +103,25 @@ npm run dev                  # → http://localhost:3000
 - Access Manager (owner เท่านั้น): เพิ่ม / แก้ / ซ่อน-แสดงแอป ผ่าน Server Actions
 - อัปโหลด**โลโก้ของแอป**ได้ใน Access Manager (เก็บเป็น data URI ในคอลัมน์ `logo`, จำกัด 200KB + validate ฝั่ง server) — การ์ดใน dashboard และตารางแอดมินโชว์โลโก้จริง ไม่ใส่ก็ fallback เป็น icon เดิม
 - **Categories ซ่อนไว้ชั่วคราว** (ตัดสินใจ 2026-07-22: ยังไม่รู้ taxonomy จริง) — เอาออกจาก sidebar, ฟอร์ม, ตาราง และป้ายบนการ์ดแล้ว แต่คอลัมน์ `category` ยังอยู่ใน DB (แอปใหม่ได้ค่า default `data`) เปิดกลับมาได้โดยไม่ต้อง migrate
+- Greeting ทักด้วยชื่อจริงของ user · favorites/recently-used persist ต่อผู้ใช้ (localStorage แยกตามอีเมล)
+- ปุ่ม **"Manage apps"** ใน sidebar เป็นปุ่ม CTA สีชัดเจน (เดิมกลืนไปกับเมนู)
+- Git repo บน GitHub (`TeamPetabyte/PTB_Portal`) + tag **v1.1** พร้อม release notes
+- ใบขอสำหรับแอดมิน M365 ครบ 2 ฉบับ: App Registration (`docs/entra-app-registration-request.md`) และ groups claim (`docs/entra-groups-claim-request.md` — พร้อมส่ง)
 - Prisma schema + migrations · script `db:check`
 - เอกสารขอ App Registration (`docs/`) · ดีไซน์ต้นแบบครบ (`design/`)
 
-### ⬜ งานที่เหลือ (ไว้แบ่งกันทำ)
+### ⬜ งานที่เหลือ — roadmap (เรียงลำดับที่ตกลงกัน 2026-07-23)
 
-1. **[Auth/Backend] wire "A" — สิทธิ์รายแอปตามกลุ่ม Entra** — เปิด groups claim (หรือ App Roles) ใน App Registration, อ่าน group จาก token, query `tbl_AppAccess` ตอน render dashboard แทนที่จะโชว์ทุกแอป (ตอนนี้ schema รองรับแล้วแต่ยังไม่มีโค้ดใช้) — มีคำถามค้างกับแอดมิน M365 ท้ายไฟล์ `docs/entra-app-registration-request.md`
-2. ~~**[Frontend] greeting hardcode "Jordan"**~~ ✅ แก้แล้ว (2026-07-22): ทักด้วยชื่อจริง (ชื่อแรก) ของ user จาก session
-3. ~~**[Frontend] favorites / recently-used ไม่ persist**~~ ✅ แก้แล้ว (2026-07-22): เก็บใน localStorage แยกตามอีเมลผู้ใช้ (คีย์ `ptb_favs_v1:<email>` / `ptb_recent_v1:<email>`), กรอง id ที่ไม่มีอยู่จริงใน catalog ออกตอนโหลด, ลบค่า default ปลอมแล้ว — ถ้าวันหน้าอยากให้ข้ามเครื่องได้ค่อยย้ายไปเก็บ DB
-4. **[Frontend] ปุ่มที่ยังเป็น UI เปล่า** — กระดิ่งแจ้งเตือน, Your profile, Settings, การ์ด "Request access" ยังกดแล้วไม่เกิดอะไร — ตัดสินใจว่าจะทำหรือถอดออกก่อน launch
-5. ~~**[Frontend] ข้อความ footer หน้า login** — เคลม "SOC 2 Type II · ISO 27001" มาจาก mockup~~ ✅ เอาออกแล้ว (2026-07-22 พร้อมงานเปลี่ยนหน้า login เป็นโลโก้ animation)
-6. **[Admin] Access Manager ยังขาด** — ลบแอป, จัดลำดับ (`sortOrder`), แก้ `openInNewTab` / `authType` จากฟอร์มไม่ได้
-7. **[Quality] tests** — `npm test` (node --test) ตั้งไว้แล้วแต่ยังไม่มีไฟล์ test เลย เริ่มจาก `access/policy.ts` ที่เขียนเป็น pure function รอไว้แล้ว
-8. **[Quality] ESLint** — ยังไม่มี config (`npm run lint` จะถามตั้งค่าครั้งแรก)
-9. ~~**[Infra] git** — โฟลเดอร์นี้ยังไม่ได้ `git init` / ยังไม่มี remote repo~~ ✅ เรียบร้อย (2026-07-22): repo อยู่ที่ https://github.com/TeamPetabyte/PTB_Portal.git
-10. **[Infra] deployment** — ✍️ แนวทางตัดสินใจแล้ว (2026-07-22): ใช้วิธีเดียวกับ PetabyteAi (onlyopenai) คือรันเป็น service บนเครื่องบริษัท + Cloudflare Tunnel (HTTPS) + Postgres ตัวเดิม — **คู่มือทีละขั้นอยู่ที่ [docs/deployment.md](docs/deployment.md)** เหลือลงมือจริง: git init ก่อน (ข้อ 9), เพิ่ม hostname ใน tunnel, เพิ่ม Redirect URI production ใน Azure, ตั้ง service
-11. **[Quality] error handling** — ถ้า DB ล่ม `/dashboard` จะ error ทั้งหน้า ยังไม่มี error boundary / หน้า fallback
-12. **[Docs] design/README.md ล้าสมัยบางส่วน** — หมายเหตุ "Not yet wired: Auth / App catalog" ตอนนี้ทำไปแล้ว ควรอัปเดต
+> **ข้อ 7 (สิทธิ์รายแอป) จงใจวางรองสุดท้าย** — ต้องรอประสานแอดมิน M365 · **ข้อ 8 (deploy) เป็นขั้นสุดท้าย** เริ่มเมื่อ Winn สั่ง — ทั้งนี้ส่งใบขอ groups claim ให้แอดมินได้ตั้งแต่วันนี้ การรอคำตอบไม่ block งานข้ออื่น
+
+1. **[Admin] Access Manager ส่วนที่ขาด** — ลบแอป, จัดลำดับ (`sortOrder`), แก้ `openInNewTab` / `authType` จากฟอร์ม (M)
+2. **[Frontend] ปุ่มที่ยังเป็น UI เปล่า** — กระดิ่งแจ้งเตือน, Your profile, Settings, การ์ด "Request access" — ตัดสินใจทำจริงหรือถอดออกก่อนเปิดใช้ (S–M)
+3. **[Quality] Error boundary** — กัน `/dashboard` พังทั้งหน้าเมื่อ DB ล่ม + หน้า fallback (M)
+4. **[Quality] Tests + ESLint** — เริ่มเทสต์จาก `access/policy.ts` (pure function รอไว้แล้ว) + ตั้งค่า ESLint (S–M)
+5. **[Frontend·เสริม] ฟีเจอร์จาก design ล่าสุด** (เลือกทำเป็นชิ้นได้) — dark mode, ⌘K command palette, จุดสถานะแอป, ลาก favorites จัดลำดับ, card tilt — spec CSS/logic มีแล้วใน `design/login.html` (M–L)
+6. **[Docs] เก็บตก design/README.md** — หมายเหตุ "Not yet wired" ล้าสมัย (auth/catalog ต่อเสร็จแล้ว) (S)
+7. **[Auth·รองสุดท้าย] Wire "A" — สิทธิ์รายแอปตาม Entra groups** — รอแอดมิน M365 ทำตามใบขอ [docs/entra-groups-claim-request.md](docs/entra-groups-claim-request.md) → แล้วต่อโค้ด: อ่าน groups จาก token → กรองแอปด้วย `tbl_AppAccess` → UI ผูกกลุ่มใน Access Manager (~1–2 วัน) (L)
+8. **[Infra·สุดท้าย] Deployment** — ตามคู่มือ [docs/deployment.md](docs/deployment.md): เพิ่ม hostname ใน Cloudflare Tunnel เดิม + Redirect URI production ใน Azure + ตั้ง service บนเครื่องบริษัท (L)
 
 ## กติกาเรื่องดีไซน์
 
