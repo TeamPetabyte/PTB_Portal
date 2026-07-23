@@ -83,6 +83,47 @@ const en = {
   // Command palette
   "palette.placeholder": "Search apps to open…",
   "palette.empty": "No apps match “{q}”.",
+
+  // Access Manager
+  "am.title": "Access Manager",
+  "am.subtitle": "Add, edit, or hide apps in the portal catalog.",
+  "am.back": "Back to dashboard",
+  "am.f.name": "Name",
+  "am.f.desc": "Description",
+  "am.f.uploadLogo": "Upload logo",
+  "am.f.changeLogo": "Change logo",
+  "am.f.newTab": "Open in new tab",
+  "am.f.addApp": "Add app",
+  "am.col.url": "URL",
+  "am.col.opens": "Opens·30d",
+  "am.col.status": "Status",
+  "am.status.active": "Active",
+  "am.status.hidden": "Hidden",
+  "am.btn.edit": "Edit",
+  "am.btn.save": "Save",
+  "am.btn.cancel": "Cancel",
+  "am.btn.hide": "Hide",
+  "am.btn.unhide": "Unhide",
+  "am.btn.delete": "Delete",
+  "am.empty.apps": "No apps yet — add the first one above.",
+  "am.confirm.deleteApp": 'Delete "{name}" from the portal? This cannot be undone.',
+  "am.alert.imageOnly": "Please choose an image file (PNG, SVG, JPG…).",
+  "am.alert.logoSize": "Logo file must be 200KB or smaller.",
+  "am.ann.title": "Announcements",
+  "am.ann.subtitle": "Post company news — everyone sees it in the bell menu on the dashboard.",
+  "am.ann.fTitle": "Title",
+  "am.ann.fBody": "Message",
+  "am.ann.post": "Post",
+  "am.ann.colAnn": "Announcement",
+  "am.ann.colPosted": "Posted",
+  "am.ann.empty": "No announcements yet — post the first one above.",
+  "am.ann.confirmDelete": 'Delete announcement "{title}"?',
+
+  // Dashboard error boundary
+  "err.title": "Couldn't load the portal",
+  "err.note":
+    "Your sign-in is fine — the portal just couldn't reach its database. It may be a network hiccup or the internal server being unavailable. Try again in a moment; if it keeps happening, tell IT.",
+  "err.retry": "Try again",
 };
 
 export type MessageKey = keyof typeof en;
@@ -151,6 +192,45 @@ const th: Record<MessageKey, string> = {
 
   "palette.placeholder": "ค้นหาแอปเพื่อเปิด…",
   "palette.empty": "ไม่มีแอปที่ตรงกับ “{q}”",
+
+  "am.title": "จัดการการเข้าถึง",
+  "am.subtitle": "เพิ่ม แก้ไข หรือซ่อนแอปในแคตตาล็อกของพอร์ทัล",
+  "am.back": "กลับหน้าแดชบอร์ด",
+  "am.f.name": "ชื่อ",
+  "am.f.desc": "คำอธิบาย",
+  "am.f.uploadLogo": "อัปโหลดโลโก้",
+  "am.f.changeLogo": "เปลี่ยนโลโก้",
+  "am.f.newTab": "เปิดในแท็บใหม่",
+  "am.f.addApp": "เพิ่มแอป",
+  "am.col.url": "URL",
+  "am.col.opens": "เปิด·30 วัน",
+  "am.col.status": "สถานะ",
+  "am.status.active": "ใช้งาน",
+  "am.status.hidden": "ซ่อน",
+  "am.btn.edit": "แก้ไข",
+  "am.btn.save": "บันทึก",
+  "am.btn.cancel": "ยกเลิก",
+  "am.btn.hide": "ซ่อน",
+  "am.btn.unhide": "เลิกซ่อน",
+  "am.btn.delete": "ลบ",
+  "am.empty.apps": "ยังไม่มีแอป — เพิ่มอันแรกด้านบน",
+  "am.confirm.deleteApp": 'ลบ "{name}" ออกจากพอร์ทัล? การกระทำนี้ย้อนกลับไม่ได้',
+  "am.alert.imageOnly": "กรุณาเลือกไฟล์รูปภาพ (PNG, SVG, JPG…)",
+  "am.alert.logoSize": "ไฟล์โลโก้ต้องมีขนาดไม่เกิน 200KB",
+  "am.ann.title": "ประกาศ",
+  "am.ann.subtitle": "โพสต์ข่าวบริษัท — ทุกคนเห็นในเมนูกระดิ่งบนแดชบอร์ด",
+  "am.ann.fTitle": "หัวข้อ",
+  "am.ann.fBody": "ข้อความ",
+  "am.ann.post": "โพสต์",
+  "am.ann.colAnn": "ประกาศ",
+  "am.ann.colPosted": "โพสต์เมื่อ",
+  "am.ann.empty": "ยังไม่มีประกาศ — โพสต์อันแรกด้านบน",
+  "am.ann.confirmDelete": 'ลบประกาศ "{title}"?',
+
+  "err.title": "โหลดพอร์ทัลไม่สำเร็จ",
+  "err.note":
+    "การเข้าสู่ระบบของคุณปกติดี — แต่พอร์ทัลเชื่อมต่อฐานข้อมูลไม่ได้ อาจเป็นปัญหาเครือข่ายชั่วคราวหรือเซิร์ฟเวอร์ภายในไม่พร้อมใช้งาน ลองใหม่อีกครั้ง หากยังเป็นอยู่แจ้งฝ่าย IT",
+  "err.retry": "ลองใหม่",
 };
 
 const dict: Record<Locale, Record<MessageKey, string>> = { en, th };

@@ -15,12 +15,14 @@ import {
 } from "@/app/dashboard/access-manager/actions";
 import { Icon, IconSprite } from "./icons";
 import type { Announcement } from "./portal-data";
+import { useI18n } from "@/lib/i18n";
 
 const MAX_LOGO_BYTES = 200 * 1024;
 
 /** Upload an app logo (stored as a data URI); falls back to the icon when empty.
  * `formId` associates the hidden value with a form it doesn't sit inside. */
 function LogoField({ initial, formId }: { initial?: string | null; formId?: string }) {
+  const { t } = useI18n();
   const [logo, setLogo] = useState(initial ?? "");
 
   function onFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -28,11 +30,11 @@ function LogoField({ initial, formId }: { initial?: string | null; formId?: stri
     e.target.value = "";
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      alert("Please choose an image file (PNG, SVG, JPG…).");
+      alert(t("am.alert.imageOnly"));
       return;
     }
     if (file.size > MAX_LOGO_BYTES) {
-      alert("Logo file must be 200KB or smaller.");
+      alert(t("am.alert.logoSize"));
       return;
     }
     const reader = new FileReader();
@@ -45,7 +47,7 @@ function LogoField({ initial, formId }: { initial?: string | null; formId?: stri
       <input type="hidden" name="logo" value={logo} form={formId} />
       {logo && <img src={logo} alt="Logo preview" className="am-logo-preview" />}
       <label className="am-btn am-logo-btn">
-        {logo ? "Change logo" : "Upload logo"}
+        {logo ? t("am.f.changeLogo") : t("am.f.uploadLogo")}
         <input type="file" accept="image/*" onChange={onFile} style={{ display: "none" }} />
       </label>
       {logo && (
@@ -58,15 +60,21 @@ function LogoField({ initial, formId }: { initial?: string | null; formId?: stri
 }
 
 function AppFields({ app }: { app?: AppRow }) {
+  const { t } = useI18n();
   return (
     <>
-      <input name="name" placeholder="Name" defaultValue={app?.name} required />
-      <input name="description" placeholder="Description" defaultValue={app?.description} required />
+      <input name="name" placeholder={t("am.f.name")} defaultValue={app?.name} required />
+      <input
+        name="description"
+        placeholder={t("am.f.desc")}
+        defaultValue={app?.description}
+        required
+      />
       <LogoField initial={app?.logo} />
       <input name="url" type="url" placeholder="https://…" defaultValue={app?.url} required />
       <label className="am-check am-newtab">
         <input type="checkbox" name="openInNewTab" defaultChecked={app?.openInNewTab} />
-        <span>Open in new tab</span>
+        <span>{t("am.f.newTab")}</span>
       </label>
     </>
   );
@@ -81,6 +89,7 @@ export default function AccessManagerClient({
   opens?: Record<string, number>;
   announcements?: Announcement[];
 }) {
+  const { t } = useI18n();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingAnnId, setEditingAnnId] = useState<string | null>(null);
   const [dark, setDark] = useState(false);
@@ -99,27 +108,27 @@ export default function AccessManagerClient({
       <IconSprite />
       <div className="am-header">
         <div>
-          <h1 className="am-title">Access Manager</h1>
-          <p className="am-sub">Add, edit, or hide apps in the portal catalog.</p>
+          <h1 className="am-title">{t("am.title")}</h1>
+          <p className="am-sub">{t("am.subtitle")}</p>
         </div>
         <Link href="/dashboard" className="am-back">
           <Icon name="arrow" className="ic16 am-back-ico" />
-          Back to dashboard
+          {t("am.back")}
         </Link>
       </div>
 
       <form action={createApp} className="am-addform">
         <AppFields />
-        <button type="submit" className="am-btn am-btn-primary">Add app</button>
+        <button type="submit" className="am-btn am-btn-primary">{t("am.f.addApp")}</button>
       </form>
 
       <table className="am-table am-apps">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>URL</th>
-            <th>Opens·30d</th>
-            <th>Status</th>
+            <th>{t("am.f.name")}</th>
+            <th>{t("am.col.url")}</th>
+            <th>{t("am.col.opens")}</th>
+            <th>{t("am.col.status")}</th>
             <th />
           </tr>
         </thead>
@@ -141,14 +150,14 @@ export default function AccessManagerClient({
                     <input
                       form={`edit-${app.id}`}
                       name="name"
-                      placeholder="Name"
+                      placeholder={t("am.f.name")}
                       defaultValue={app.name}
                       required
                     />
                     <input
                       form={`edit-${app.id}`}
                       name="description"
-                      placeholder="Description"
+                      placeholder={t("am.f.desc")}
                       defaultValue={app.description}
                       required
                     />
@@ -172,22 +181,22 @@ export default function AccessManagerClient({
                         name="openInNewTab"
                         defaultChecked={app.openInNewTab}
                       />
-                      <span>Open in new tab</span>
+                      <span>{t("am.f.newTab")}</span>
                     </label>
                   </div>
                 </td>
                 <td className="am-opens">{opens[app.id] ?? 0}</td>
                 <td>
                   <span className={`am-badge ${app.active ? "am-badge-on" : "am-badge-off"}`}>
-                    {app.active ? "Active" : "Hidden"}
+                    {app.active ? t("am.status.active") : t("am.status.hidden")}
                   </span>
                 </td>
                 <td className="am-actions">
                   <button form={`edit-${app.id}`} type="submit" className="am-btn am-btn-primary">
-                    Save
+                    {t("am.btn.save")}
                   </button>
                   <button type="button" className="am-btn" onClick={() => setEditingId(null)}>
-                    Cancel
+                    {t("am.btn.cancel")}
                   </button>
                 </td>
               </tr>
@@ -210,7 +219,7 @@ export default function AccessManagerClient({
                 <td className="am-opens">{opens[app.id] ?? 0}</td>
                 <td>
                   <span className={`am-badge ${app.active ? "am-badge-on" : "am-badge-off"}`}>
-                    {app.active ? "Active" : "Hidden"}
+                    {app.active ? t("am.status.active") : t("am.status.hidden")}
                   </span>
                 </td>
                 <td className="am-actions">
@@ -230,21 +239,23 @@ export default function AccessManagerClient({
                   >
                     ↓
                   </button>
-                  <button className="am-btn" onClick={() => setEditingId(app.id)}>Edit</button>
+                  <button className="am-btn" onClick={() => setEditingId(app.id)}>
+                    {t("am.btn.edit")}
+                  </button>
                   <form action={setAppActive.bind(null, app.id, !app.active)}>
                     <button type="submit" className="am-btn">
-                      {app.active ? "Hide" : "Unhide"}
+                      {app.active ? t("am.btn.hide") : t("am.btn.unhide")}
                     </button>
                   </form>
                   <button
                     className="am-btn am-btn-danger"
                     onClick={async () => {
-                      if (confirm(`Delete "${app.name}" from the portal? This cannot be undone.`)) {
+                      if (confirm(t("am.confirm.deleteApp", { name: app.name }))) {
                         await deleteApp(app.id);
                       }
                     }}
                   >
-                    Delete
+                    {t("am.btn.delete")}
                   </button>
                 </td>
               </tr>
@@ -252,30 +263,28 @@ export default function AccessManagerClient({
           )}
           {apps.length === 0 && (
             <tr>
-              <td colSpan={5} className="am-empty">No apps yet — add the first one above.</td>
+              <td colSpan={5} className="am-empty">{t("am.empty.apps")}</td>
             </tr>
           )}
         </tbody>
       </table>
 
       <div className="am-sect">
-        <h2 className="am-sect-t">Announcements</h2>
-        <p className="am-sub">
-          Post company news — everyone sees it in the bell menu on the dashboard.
-        </p>
+        <h2 className="am-sect-t">{t("am.ann.title")}</h2>
+        <p className="am-sub">{t("am.ann.subtitle")}</p>
       </div>
 
       <form action={createAnnouncement} className="am-annform">
-        <input name="title" placeholder="Title" required />
-        <input name="body" placeholder="Message" required />
-        <button type="submit" className="am-btn am-btn-primary">Post</button>
+        <input name="title" placeholder={t("am.ann.fTitle")} required />
+        <input name="body" placeholder={t("am.ann.fBody")} required />
+        <button type="submit" className="am-btn am-btn-primary">{t("am.ann.post")}</button>
       </form>
 
       <table className="am-table am-anns">
         <thead>
           <tr>
-            <th>Announcement</th>
-            <th>Posted</th>
+            <th>{t("am.ann.colAnn")}</th>
+            <th>{t("am.ann.colPosted")}</th>
             <th />
           </tr>
         </thead>
@@ -294,13 +303,15 @@ export default function AccessManagerClient({
                     <input name="title" defaultValue={a.title} required />
                     <input name="body" defaultValue={a.body} required />
                     <div className="am-editform-actions">
-                      <button type="submit" className="am-btn am-btn-primary">Save</button>
+                      <button type="submit" className="am-btn am-btn-primary">
+                        {t("am.btn.save")}
+                      </button>
                       <button
                         type="button"
                         className="am-btn"
                         onClick={() => setEditingAnnId(null)}
                       >
-                        Cancel
+                        {t("am.btn.cancel")}
                       </button>
                     </div>
                   </form>
@@ -320,16 +331,18 @@ export default function AccessManagerClient({
                   })}
                 </td>
                 <td className="am-actions">
-                  <button className="am-btn" onClick={() => setEditingAnnId(a.id)}>Edit</button>
+                  <button className="am-btn" onClick={() => setEditingAnnId(a.id)}>
+                    {t("am.btn.edit")}
+                  </button>
                   <button
                     className="am-btn am-btn-danger"
                     onClick={async () => {
-                      if (confirm(`Delete announcement "${a.title}"?`)) {
+                      if (confirm(t("am.ann.confirmDelete", { title: a.title }))) {
                         await deleteAnnouncement(a.id);
                       }
                     }}
                   >
-                    Delete
+                    {t("am.btn.delete")}
                   </button>
                 </td>
               </tr>
@@ -337,9 +350,7 @@ export default function AccessManagerClient({
           )}
           {announcements.length === 0 && (
             <tr>
-              <td colSpan={3} className="am-empty">
-                No announcements yet — post the first one above.
-              </td>
+              <td colSpan={3} className="am-empty">{t("am.ann.empty")}</td>
             </tr>
           )}
         </tbody>
