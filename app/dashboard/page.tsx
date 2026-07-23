@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { isOwner } from "@/access/policy";
 import { prisma } from "@/db";
 import PortalApp, { type PortalUser } from "@/components/PortalApp";
-import type { App, CatKey } from "@/components/portal-data";
+import type { Announcement, App, CatKey } from "@/components/portal-data";
 
 export default async function Page() {
   const session = await auth();
@@ -24,10 +24,22 @@ export default async function Page() {
     initials: initials || "U",
   };
 
-  const rows = await prisma.app.findMany({
-    where: { active: true },
-    orderBy: { sortOrder: "asc" },
-  });
+  const [rows, annRows] = await Promise.all([
+    prisma.app.findMany({
+      where: { active: true },
+      orderBy: { sortOrder: "asc" },
+    }),
+    prisma.announcement.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 15,
+    }),
+  ]);
+  const announcements: Announcement[] = annRows.map((a) => ({
+    id: a.id,
+    title: a.title,
+    body: a.body,
+    createdAt: a.createdAt.toISOString(),
+  }));
   const apps: App[] = rows.map((row) => ({
     id: row.id,
     name: row.name,
@@ -39,5 +51,12 @@ export default async function Page() {
     openInNewTab: row.openInNewTab,
   }));
 
-  return <PortalApp user={user} apps={apps} isOwner={isOwner(session.user.email)} />;
+  return (
+    <PortalApp
+      user={user}
+      apps={apps}
+      announcements={announcements}
+      isOwner={isOwner(session.user.email)}
+    />
+  );
 }

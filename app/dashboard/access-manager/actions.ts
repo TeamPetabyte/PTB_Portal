@@ -82,6 +82,26 @@ export async function deleteApp(id: string) {
   revalidateCatalog();
 }
 
+export async function createAnnouncement(formData: FormData) {
+  await requireOwner();
+
+  const title = String(formData.get("title") ?? "").trim();
+  const body = String(formData.get("body") ?? "").trim();
+  if (!title || !body) return;
+
+  await prisma.announcement.create({ data: { title, body } });
+
+  revalidateCatalog();
+}
+
+export async function deleteAnnouncement(id: string) {
+  await requireOwner();
+
+  await prisma.announcement.delete({ where: { id } });
+
+  revalidateCatalog();
+}
+
 export async function moveApp(id: string, direction: "up" | "down") {
   await requireOwner();
 

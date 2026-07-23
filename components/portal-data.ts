@@ -16,6 +16,15 @@ export interface App {
   openInNewTab: boolean;
 }
 
+// Company announcement rendered in the notification feed (dates as ISO strings
+// so server components can hand them to client components).
+export interface Announcement {
+  id: string;
+  title: string;
+  body: string;
+  createdAt: string;
+}
+
 export const catMeta: Record<CatKey, string> = {
   eng: "Engineering",
   fin: "Finance",

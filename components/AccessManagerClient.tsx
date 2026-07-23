@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { App as AppRow } from "@prisma/client";
 import {
@@ -9,8 +9,11 @@ import {
   setAppActive,
   deleteApp,
   moveApp,
+  createAnnouncement,
+  deleteAnnouncement,
 } from "@/app/dashboard/access-manager/actions";
 import { Icon, IconSprite } from "./icons";
+import type { Announcement } from "./portal-data";
 
 const MAX_LOGO_BYTES = 200 * 1024;
 
@@ -67,11 +70,29 @@ function AppFields({ app }: { app?: AppRow }) {
   );
 }
 
-export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
+export default function AccessManagerClient({
+  apps,
+  opens = {},
+  announcements = [],
+}: {
+  apps: AppRow[];
+  opens?: Record<string, number>;
+  announcements?: Announcement[];
+}) {
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [dark, setDark] = useState(false);
+
+  // Follow the theme the user picked on the dashboard (Settings modal).
+  useEffect(() => {
+    try {
+      setDark(localStorage.getItem("ptb_theme_v1") === "dark");
+    } catch {
+      // ignore
+    }
+  }, []);
 
   return (
-    <div className="ui am">
+    <div className={`ui am root${dark ? " dark" : ""}`}>
       <IconSprite />
       <div className="am-header">
         <div>
@@ -89,11 +110,12 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
         <button type="submit" className="am-btn am-btn-primary">Add app</button>
       </form>
 
-      <table className="am-table">
+      <table className="am-table am-apps">
         <thead>
           <tr>
             <th>Name</th>
             <th>URL</th>
+            <th>Opens·30d</th>
             <th>Status</th>
             <th />
           </tr>
@@ -102,7 +124,7 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
           {apps.map((app, idx) =>
             editingId === app.id ? (
               <tr key={app.id} className="am-row-editing">
-                <td colSpan={4}>
+                <td colSpan={5}>
                   <form
                     action={async (formData) => {
                       await updateApp(app.id, formData);
@@ -136,6 +158,7 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
                 <td className="am-url">
                   <a href={app.url} target="_blank" rel="noreferrer">{app.url}</a>
                 </td>
+                <td className="am-opens">{opens[app.id] ?? 0}</td>
                 <td>
                   <span className={`am-badge ${app.active ? "am-badge-on" : "am-badge-off"}`}>
                     {app.active ? "Active" : "Hidden"}
@@ -180,7 +203,66 @@ export default function AccessManagerClient({ apps }: { apps: AppRow[] }) {
           )}
           {apps.length === 0 && (
             <tr>
-              <td colSpan={4} className="am-empty">No apps yet — add the first one above.</td>
+              <td colSpan={5} className="am-empty">No apps yet — add the first one above.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <div className="am-sect">
+        <h2 className="am-sect-t">Announcements</h2>
+        <p className="am-sub">
+          Post company news — everyone sees it in the bell menu on the dashboard.
+        </p>
+      </div>
+
+      <form action={createAnnouncement} className="am-annform">
+        <input name="title" placeholder="Title" required />
+        <input name="body" placeholder="Message" required />
+        <button type="submit" className="am-btn am-btn-primary">Post</button>
+      </form>
+
+      <table className="am-table am-anns">
+        <thead>
+          <tr>
+            <th>Announcement</th>
+            <th>Posted</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {announcements.map((a) => (
+            <tr key={a.id}>
+              <td>
+                <div className="am-name">{a.title}</div>
+                <div className="am-desc">{a.body}</div>
+              </td>
+              <td>
+                {new Date(a.createdAt).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </td>
+              <td className="am-actions">
+                <button
+                  className="am-btn am-btn-danger"
+                  onClick={async () => {
+                    if (confirm(`Delete announcement "${a.title}"?`)) {
+                      await deleteAnnouncement(a.id);
+                    }
+                  }}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+          {announcements.length === 0 && (
+            <tr>
+              <td colSpan={3} className="am-empty">
+                No announcements yet — post the first one above.
+              </td>
             </tr>
           )}
         </tbody>

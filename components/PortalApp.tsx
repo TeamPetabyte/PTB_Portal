@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut as authSignOut } from "next-auth/react";
 import { Icon, IconSprite } from "./icons";
-import { type App } from "./portal-data";
+import { type Announcement, type App } from "./portal-data";
+import { logAppOpen } from "@/app/dashboard/actions";
 
 const ACCENT = "#2f80d8";
 
@@ -22,10 +23,12 @@ type Filter = "all" | "fav" | "recent";
 export default function PortalApp({
   user,
   apps,
+  announcements = [],
   isOwner = false,
 }: {
   user: PortalUser;
   apps: App[];
+  announcements?: Announcement[];
   isOwner?: boolean;
 }) {
   const USER = user;
@@ -36,8 +39,11 @@ export default function PortalApp({
   const [prefsLoaded, setPrefsLoaded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [notifSeenAt, setNotifSeenAt] = useState(0);
+  const [sideOpen, setSideOpen] = useState(false);
   const [modal, setModal] = useState<null | "profile" | "settings">(null);
   const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [toast, setToast] = useState<string | null>(null);
 
   const searchRef = useRef<HTMLInputElement>(null);
@@ -82,8 +88,10 @@ export default function PortalApp({
     setRecent(load("recent"));
     try {
       if (localStorage.getItem("ptb_density_v1") === "compact") setDensity("compact");
+      if (localStorage.getItem("ptb_theme_v1") === "dark") setTheme("dark");
+      setNotifSeenAt(Number(localStorage.getItem(prefsKey("notifseen")) ?? 0) || 0);
     } catch {
-      // ignore — density just stays comfortable
+      // ignore — defaults stay
     }
     setPrefsLoaded(true);
   }, []);
@@ -94,6 +102,33 @@ export default function PortalApp({
       localStorage.setItem("ptb_density_v1", next);
     } catch {
       // ignore
+    }
+  }
+
+  function setThemePref(next: "light" | "dark") {
+    setTheme(next);
+    try {
+      localStorage.setItem("ptb_theme_v1", next);
+    } catch {
+      // ignore
+    }
+  }
+
+  const latestAnnounceAt = announcements.length > 0 ? Date.parse(announcements[0].createdAt) : 0;
+  const hasUnread = prefsLoaded && latestAnnounceAt > notifSeenAt;
+
+  function openNotifications() {
+    const opening = !notifOpen;
+    setNotifOpen(opening);
+    setMenuOpen(false);
+    if (opening) {
+      const now = Date.now();
+      setNotifSeenAt(now);
+      try {
+        localStorage.setItem(prefsKey("notifseen"), String(now));
+      } catch {
+        // ignore
+      }
     }
   }
 
@@ -113,10 +148,14 @@ export default function PortalApp({
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 2200);
 
+    const logged = logAppOpen(app.id).catch(() => {});
     if (app.openInNewTab) {
       window.open(app.url, "_blank", "noopener,noreferrer");
     } else {
-      window.location.href = app.url;
+      // Give the usage log a moment to land, but never hold navigation hostage.
+      void Promise.race([logged, new Promise((r) => setTimeout(r, 800))]).then(() => {
+        window.location.href = app.url;
+      });
     }
   }
 
@@ -163,10 +202,14 @@ export default function PortalApp({
     : "There are no apps in this view yet.";
 
   return (
-    <div className={`root ui${density === "compact" ? " dense" : ""}`} style={{ ["--accent" as string]: ACCENT }}>
+    <div
+      className={`root ui${density === "compact" ? " dense" : ""}${theme === "dark" ? " dark" : ""}`}
+      style={{ ["--accent" as string]: ACCENT }}
+    >
       <IconSprite />
       <div className="dash">
-        <aside className="side">
+        {sideOpen && <div className="side-ov" onClick={() => setSideOpen(false)} />}
+        <aside className={`side${sideOpen ? " mobile-open" : ""}`}>
           <div className="brand">
             <div className="brand-mark">
               <span className="markimg" role="img" aria-label="Petabyte" />
@@ -182,7 +225,10 @@ export default function PortalApp({
             <button
               key={n.key}
               className={`nav ${cat === n.key ? "on" : ""}`}
-              onClick={() => setCat(n.key)}
+              onClick={() => {
+                setCat(n.key);
+                setSideOpen(false);
+              }}
             >
               <Icon name={n.icon} className="navico" />
               <span className="lbl">{n.label}</span>
@@ -193,7 +239,11 @@ export default function PortalApp({
           {isOwner && (
             <>
               <div className="navlabel">Admin</div>
-              <Link href="/dashboard/access-manager" className="admin-btn">
+              <Link
+                href="/dashboard/access-manager"
+                className="admin-btn"
+                onClick={() => setSideOpen(false)}
+              >
                 <Icon name="shield" className="ic18" />
                 <span>Manage apps</span>
                 <Icon name="arrow" className="ic14 admin-btn-arrow" />
@@ -205,6 +255,17 @@ export default function PortalApp({
 
         <div className="main">
           <header className="topbar">
+            <button className="iconbtn menu-toggle" title="Menu" onClick={() => setSideOpen(true)}>
+              <svg className="ic18" viewBox="0 0 24 24">
+                <path
+                  d="M4 7h16M4 12h16M4 17h16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
             <div className="search">
               <Icon name="search" className="sico ic18" />
               <input
@@ -218,23 +279,35 @@ export default function PortalApp({
             </div>
             <div className="topright">
               <div className="userwrap">
-                <button
-                  className="iconbtn"
-                  title="Notifications"
-                  onClick={() => {
-                    setNotifOpen((o) => !o);
-                    setMenuOpen(false);
-                  }}
-                >
+                <button className="iconbtn" title="Notifications" onClick={openNotifications}>
                   <Icon name="bell" className="ic18" />
+                  {hasUnread && <span className="dot" />}
                 </button>
                 {notifOpen && (
                   <div className="menu notif-menu">
                     <div className="notif-h">Notifications</div>
-                    <div className="notif-empty">
-                      <Icon name="bell" className="ic18" />
-                      <p>Nothing new right now. Updates about your apps will show up here.</p>
-                    </div>
+                    {announcements.length === 0 ? (
+                      <div className="notif-empty">
+                        <Icon name="bell" className="ic18" />
+                        <p>Nothing new right now. Company announcements will show up here.</p>
+                      </div>
+                    ) : (
+                      <div className="notif-list">
+                        {announcements.map((a) => (
+                          <div key={a.id} className="notif-i">
+                            <div className="notif-t">{a.title}</div>
+                            <div className="notif-b">{a.body}</div>
+                            <div className="notif-d">
+                              {new Date(a.createdAt).toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -372,6 +445,26 @@ export default function PortalApp({
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-t">Settings</div>
             <div className="set-row">
+              <div>
+                <div className="set-name">Theme</div>
+                <div className="set-desc">Dark theme is easier on the eyes at night.</div>
+              </div>
+              <div className="seg">
+                <button
+                  className={theme === "light" ? "on" : ""}
+                  onClick={() => setThemePref("light")}
+                >
+                  Light
+                </button>
+                <button
+                  className={theme === "dark" ? "on" : ""}
+                  onClick={() => setThemePref("dark")}
+                >
+                  Dark
+                </button>
+              </div>
+            </div>
+            <div className="set-row" style={{ marginTop: 16 }}>
               <div>
                 <div className="set-name">Display density</div>
                 <div className="set-desc">Compact fits more apps on screen.</div>

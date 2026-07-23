@@ -23,9 +23,34 @@ model App {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  access AppAccess[]
+  access     AppAccess[]
+  openEvents AppOpenEvent[]
 
   @@map("tbl_App")
+}
+
+// Company announcements — shown in the dashboard notification feed (bell).
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tbl_Announcement")
+}
+
+// One row per app launch — powers usage insight in Access Manager.
+model AppOpenEvent {
+  id        String   @id @default(cuid())
+  appId     String
+  userEmail String
+  openedAt  DateTime @default(now())
+
+  app App @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@index([appId, openedAt])
+  @@map("tbl_AppOpenEvent")
 }
 
 // Maps to an Entra ID security group. Populated once group-claim wiring (Phase 4) lands.

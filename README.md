@@ -63,6 +63,8 @@ portalptb/
 | `tbl_App` | แอป 1 แถวต่อ 1 แอปใน catalog — name, category (`eng/fin/data/ops/ppl/sec`), icon, `logo` (data URI, nullable), url, `openInNewTab`, `authType` (`sso`/`own-login`), `active`, `sortOrder` |
 | `tbl_AccessGroup` | map กับ Entra security group (เตรียมไว้สำหรับ "A" — ยังไม่ใช้) |
 | `tbl_AppAccess` | join table แอป↔กลุ่ม — แอปไหนไม่มีแถว = ทุกคนเห็น (ยังไม่ใช้) |
+| `tbl_Announcement` | ประกาศบริษัท — โพสต์จาก Access Manager แสดงในกระดิ่งบน dashboard |
+| `tbl_AppOpenEvent` | log ทุกครั้งที่พนักงานเปิดแอป (appId, userEmail, เวลา) — ใช้ดู usage |
 
 ## วิธีรันบนเครื่อง
 
@@ -107,6 +109,7 @@ npm run dev                  # → http://localhost:3000
 - ปุ่ม **"Manage apps"** ใน sidebar เป็นปุ่ม CTA สีชัดเจน (เดิมกลืนไปกับเมนู)
 - Git repo บน GitHub (`TeamPetabyte/PTB_Portal`) + tag **v1.1** พร้อม release notes
 - ใบขอสำหรับแอดมิน M365 ครบ 2 ฉบับ: App Registration (`docs/entra-app-registration-request.md`) และ groups claim (`docs/entra-groups-claim-request.md` — พร้อมส่ง)
+- **v1.2**: ประกาศบริษัท (โพสต์จาก Access Manager → แสดงในกระดิ่ง พร้อมจุดแดงแจ้งเรื่องใหม่ต่อผู้ใช้) · usage logging ทุกการเปิดแอป + คอลัมน์ Opens·30d · เมนูมือถือแบบ drawer · **dark mode** ใน Settings (ครอบ dashboard + Access Manager) · research ฟีเจอร์ portal (`docs/portal-feature-research.md`)
 - Prisma schema + migrations · script `db:check`
 - เอกสารขอ App Registration (`docs/`) · ดีไซน์ต้นแบบครบ (`design/`)
 
@@ -118,7 +121,7 @@ npm run dev                  # → http://localhost:3000
 2. ~~**[Frontend] ปุ่มที่ยังเป็น UI เปล่า**~~ ✅ เสร็จ (2026-07-23) ตามที่ Winn เคาะ: กระดิ่ง = เปิดแผงแจ้งเตือน (ตอนนี้ empty state รอระบบแจ้งเตือนจริง), Your profile = modal ข้อมูลบัญชีจาก Entra, Settings = modal + ตั้งค่า display density ใช้ได้จริง (persist localStorage), การ์ด "Request access" = **ถอดออก** (การจัดการเป็นหน้าที่ super admin ในแอป)
 3. **[Quality] Error boundary** — กัน `/dashboard` พังทั้งหน้าเมื่อ DB ล่ม + หน้า fallback (M)
 4. **[Quality] Tests + ESLint** — เริ่มเทสต์จาก `access/policy.ts` (pure function รอไว้แล้ว) + ตั้งค่า ESLint (S–M)
-5. **[Frontend·เสริม] ฟีเจอร์จาก design ล่าสุด** (เลือกทำเป็นชิ้นได้) — dark mode, ⌘K command palette, จุดสถานะแอป, ลาก favorites จัดลำดับ, card tilt — spec CSS/logic มีแล้วใน `design/login.html` (M–L)
+5. **[Frontend·เสริม] ฟีเจอร์จาก design ล่าสุด** (เลือกทำเป็นชิ้นได้) — ~~dark mode~~ ✅ (v1.2), เหลือ: ⌘K command palette, จุดสถานะแอป (รอ health endpoint ของแต่ละแอป), ลาก favorites จัดลำดับ, card tilt (M–L)
 6. **[Docs] เก็บตก design/README.md** — หมายเหตุ "Not yet wired" ล้าสมัย (auth/catalog ต่อเสร็จแล้ว) (S)
 7. **[Auth·รองสุดท้าย] Wire "A" — สิทธิ์รายแอปตาม Entra groups** — รอแอดมิน M365 ทำตามใบขอ [docs/entra-groups-claim-request.md](docs/entra-groups-claim-request.md) → แล้วต่อโค้ด: อ่าน groups จาก token → กรองแอปด้วย `tbl_AppAccess` → UI ผูกกลุ่มใน Access Manager (~1–2 วัน) (L)
 8. **[Infra·สุดท้าย] Deployment** — ตามคู่มือ [docs/deployment.md](docs/deployment.md): เพิ่ม hostname ใน Cloudflare Tunnel เดิม + Redirect URI production ใน Azure + ตั้ง service บนเครื่องบริษัท (L)
