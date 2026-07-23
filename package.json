@@ -1,6 +1,6 @@
 {
   "name": "portalptb",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
   "description": "Petabyte Portal — internal company portal (Microsoft Entra ID, access C+A)",
   "scripts": {

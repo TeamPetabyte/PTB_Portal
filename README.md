@@ -110,6 +110,7 @@ npm run dev                  # → http://localhost:3000
 - Git repo บน GitHub (`TeamPetabyte/PTB_Portal`) + tag **v1.1** พร้อม release notes
 - ใบขอสำหรับแอดมิน M365 ครบ 2 ฉบับ: App Registration (`docs/entra-app-registration-request.md`) และ groups claim (`docs/entra-groups-claim-request.md` — พร้อมส่ง)
 - **v1.2**: ประกาศบริษัท (โพสต์จาก Access Manager → แสดงในกระดิ่ง พร้อมจุดแดงแจ้งเรื่องใหม่ต่อผู้ใช้) · usage logging ทุกการเปิดแอป + คอลัมน์ Opens·30d · เมนูมือถือแบบ drawer · **dark mode** ใน Settings (ครอบ dashboard + Access Manager) · research ฟีเจอร์ portal (`docs/portal-feature-research.md`)
+- **v1.3**: popup ทุกใบปิดเองเมื่อเมาส์ออก (grace 1 วิ) และไม่บล็อกการคลิกหน้าจอ · error boundary + DB pool hygiene (แก้เคส login เหมือนค้างเพราะสาย DB ตาย) · ฟอร์ม Edit วางตรงคอลัมน์ตาราง · แก้ชื่อ user จมใน dark theme · favicon เป็นโลโก้ TB
 - Prisma schema + migrations · script `db:check`
 - เอกสารขอ App Registration (`docs/`) · ดีไซน์ต้นแบบครบ (`design/`)
 
