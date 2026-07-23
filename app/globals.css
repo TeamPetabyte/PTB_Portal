@@ -183,6 +183,25 @@ html, body { margin: 0; padding: 0; }
 .toast .tspin { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes toastin { from { opacity: 0; transform: translate(-50%,14px); } to { opacity: 1; transform: translate(-50%,0); } }
 
+/* ---------- ⌘K command palette (ported from design/login.html) ---------- */
+.pal-ov { position: fixed; inset: 0; background: rgba(10,18,32,.45); backdrop-filter: blur(6px); z-index: 80; display: flex; align-items: flex-start; justify-content: center; padding-top: 14vh; animation: palov .18s ease both; }
+@keyframes palov { from { opacity: 0; } }
+.pal { width: min(560px,92vw); background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 40px 90px -20px rgba(0,0,0,.5); overflow: hidden; animation: palin .22s cubic-bezier(.2,.8,.3,1) both; }
+@keyframes palin { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+.pal-in { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); color: var(--ink3); }
+.pal-in input { flex: 1; border: none; outline: none; background: none; font: inherit; font-size: 16px; color: var(--ink); }
+.pal-in .kbd { position: static; }
+.pal-list { max-height: 340px; overflow: auto; padding: 8px; }
+.pal-i { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 11px; cursor: pointer; }
+.pal-i.on { background: color-mix(in srgb,var(--accent) 10%,var(--surface)); }
+.pal-i .tile { width: 34px; height: 34px; border-radius: 9px; }
+.pal-i .tile svg { width: 18px; height: 18px; }
+.pal-i .tile-img { width: 22px; height: 22px; }
+.pal-n { font-weight: 600; font-size: 14.5px; flex: 1; }
+.pal-arrow { color: var(--ink3); opacity: 0; }
+.pal-i.on .pal-arrow { opacity: 1; }
+.pal-e { padding: 26px; text-align: center; color: var(--ink3); font-size: 14px; }
+
 @media (max-width: 880px) {
   .lmain { padding: 110px 30px 90px; }
   .hero-tile, .chip, .l3d-glow { display: none; }

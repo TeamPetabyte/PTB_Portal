@@ -46,6 +46,12 @@ export default function PortalApp({
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [toast, setToast] = useState<string | null>(null);
 
+  // ⌘K command palette — quick-launch any app.
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [palQuery, setPalQuery] = useState("");
+  const [palIndex, setPalIndex] = useState(0);
+  const palInputRef = useRef<HTMLInputElement>(null);
+
   const searchRef = useRef<HTMLInputElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -63,17 +69,26 @@ export default function PortalApp({
     clearTimeout(closeTimer.current);
   }
 
-  // ⌘K / Ctrl+K focuses search, Esc closes the user menu.
+  // ⌘K / Ctrl+K toggles the command palette, Esc closes any open overlay.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        searchRef.current?.focus();
+        setPaletteOpen((o) => {
+          const next = !o;
+          if (next) {
+            setPalQuery("");
+            setPalIndex(0);
+            setTimeout(() => palInputRef.current?.focus(), 30);
+          }
+          return next;
+        });
       }
       if (e.key === "Escape") {
         setMenuOpen(false);
         setNotifOpen(false);
         setModal(null);
+        setPaletteOpen(false);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -219,6 +234,27 @@ export default function PortalApp({
     return q ? base.filter((a) => (a.name + " " + a.desc).toLowerCase().includes(q)) : base;
   }, [cat, query, favs, recent, apps]);
 
+  const palList = useMemo(() => {
+    const q = palQuery.trim().toLowerCase();
+    return q ? apps.filter((a) => (a.name + " " + a.desc).toLowerCase().includes(q)) : apps;
+  }, [palQuery, apps]);
+
+  function onPalKey(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setPalIndex((i) => Math.min(palList.length - 1, i + 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setPalIndex((i) => Math.max(0, i - 1));
+    } else if (e.key === "Enter") {
+      const app = palList[palIndex];
+      if (app) {
+        setPaletteOpen(false);
+        openApp(app);
+      }
+    }
+  }
+
   const { title, sub } = useMemo(() => {
     const q = query.trim();
     if (q) {
@@ -310,7 +346,6 @@ export default function PortalApp({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
-              <span className="kbd">⌘K</span>
             </div>
             <div className="topright">
               <div className="userwrap">
@@ -540,6 +575,60 @@ export default function PortalApp({
             </div>
             <div className="modal-actions">
               <button className="am-btn" onClick={() => setModal(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {paletteOpen && (
+        <div
+          className="pal-ov"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setPaletteOpen(false);
+          }}
+        >
+          <div className="pal">
+            <div className="pal-in">
+              <Icon name="search" className="ic18" />
+              <input
+                ref={palInputRef}
+                type="text"
+                placeholder="Search apps to open…"
+                value={palQuery}
+                onChange={(e) => {
+                  setPalQuery(e.target.value);
+                  setPalIndex(0);
+                }}
+                onKeyDown={onPalKey}
+              />
+              <span className="kbd">ESC</span>
+            </div>
+            <div className="pal-list">
+              {palList.length === 0 ? (
+                <div className="pal-e">No apps match “{palQuery.trim()}”.</div>
+              ) : (
+                palList.map((app, i) => (
+                  <div
+                    key={app.id}
+                    className={`pal-i ${i === palIndex ? "on" : ""}`}
+                    onMouseEnter={() => setPalIndex(i)}
+                    onClick={() => {
+                      setPaletteOpen(false);
+                      openApp(app);
+                    }}
+                  >
+                    <div className={`tile t-${app.cat}${app.logo ? " haslogo" : ""}`}>
+                      {app.logo ? (
+                        <img src={app.logo} alt="" className="tile-img" />
+                      ) : (
+                        <Icon name={app.icon} className="ic24" />
+                      )}
+                    </div>
+                    <div className="pal-n">{app.name}</div>
+                    <Icon name="arrow" className="ic16 pal-arrow" />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
