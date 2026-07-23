@@ -129,7 +129,7 @@ html, body { margin: 0; padding: 0; }
 .eyebrow { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: -.01em; }
 .h-title { font-size: 25px; font-weight: 800; letter-spacing: -.03em; margin: 6px 0 0; }
 .h-sub { color: var(--ink2); font-size: 14.5px; margin: 5px 0 0; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(266px,1fr)); gap: 16px; margin-top: 24px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(266px,1fr)); gap: 16px; margin-top: 24px; perspective: 1200px; }
 .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 19px; cursor: pointer; transition: .17s; display: flex; flex-direction: column; gap: 13px; text-align: left; min-height: 158px; }
 .card:hover { border-color: #cdd7e7; box-shadow: 0 12px 30px -16px rgba(15,23,42,.3); transform: translateY(-3px); }
 .card.draggable { cursor: grab; }

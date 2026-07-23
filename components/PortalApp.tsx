@@ -217,6 +217,22 @@ export default function PortalApp({
     setFavs((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id]));
   }
 
+  // Subtle 3D tilt following the cursor (skipped while dragging or when the
+  // user prefers reduced motion).
+  function onCardTilt(e: React.MouseEvent<HTMLDivElement>) {
+    if (dragId) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width - 0.5;
+    const ny = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transform = `translateY(-3px) rotateX(${ny * -6}deg) rotateY(${nx * 6}deg)`;
+  }
+
+  function onCardTiltLeave(e: React.MouseEvent<HTMLDivElement>) {
+    e.currentTarget.style.transform = "";
+  }
+
   // Move the dragged favorite to sit where the drop target currently is.
   function reorderFav(targetId: string) {
     if (!dragId || dragId === targetId) return;
@@ -486,6 +502,8 @@ export default function PortalApp({
                         overId === app.id && dragId ? " dragover" : ""
                       }`}
                       onClick={() => openApp(app)}
+                      onMouseMove={onCardTilt}
+                      onMouseLeave={onCardTiltLeave}
                       draggable={canDrag}
                       onDragStart={canDrag ? () => setDragId(app.id) : undefined}
                       onDragOver={
