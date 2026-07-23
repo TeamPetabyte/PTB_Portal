@@ -249,7 +249,12 @@ html, body { margin: 0; padding: 0; }
 .am-desc { color: var(--ink2); margin-top: 3px; }
 .am-url a { color: var(--accent); text-decoration: none; word-break: break-all; }
 .am-url a:hover { text-decoration: underline; }
-.am-actions { display: flex; gap: 8px; justify-content: flex-end; }
+/* Keep the cell a real table-cell (display:flex here breaks row height and
+   lets the page background show through); space buttons inline instead. */
+.am-actions { text-align: right; white-space: nowrap; }
+.am-actions form { display: inline; }
+.am-actions .am-btn { vertical-align: middle; }
+.am-actions > * + * { margin-left: 8px; }
 .am-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
 .am-badge-on { color: #059669; background: #ecfdf5; }
 .am-badge-off { color: var(--ink3); background: var(--line2); }
