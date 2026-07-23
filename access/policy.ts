@@ -6,29 +6,39 @@
 //                       the full catalog; `isOwner` is the hook for all-access +
 //                       management (CEO / IT admin / dev).
 //
-// Keep this provider-agnostic and pure so it stays unit-testable.
+// Keep this provider-agnostic and pure so it stays unit-testable. Env is read
+// at call time (not module load) so the checks always reflect current config
+// and tests can vary it.
 
-export const employeeDomains = (process.env.EMPLOYEE_DOMAINS ?? "")
-  .split(",")
-  .map((d) => d.trim().toLowerCase())
-  .filter(Boolean);
+function parseList(value: string | undefined): string[] {
+  return (value ?? "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+/** Employee domains allowed to sign in (the "C" allowlist). */
+export function employeeDomains(): string[] {
+  return parseList(process.env.EMPLOYEE_DOMAINS);
+}
+
+/** Owner emails — all-access + catalog management. */
+export function ownerEmails(): string[] {
+  return parseList(process.env.OWNER_EMAILS);
+}
 
 /** C — is this email allowed to sign in to the portal at all? */
 export function isAllowedEmail(email: string | null | undefined): boolean {
   if (!email) return false;
   const domain = email.toLowerCase().split("@")[1];
   if (!domain) return false;
+  const domains = employeeDomains();
   // If no domains are configured, fail closed rather than open.
-  return employeeDomains.length > 0 && employeeDomains.includes(domain);
+  return domains.length > 0 && domains.includes(domain);
 }
-
-export const ownerEmails = (process.env.OWNER_EMAILS ?? "")
-  .split(",")
-  .map((e) => e.trim().toLowerCase())
-  .filter(Boolean);
 
 /** Owner — sees every app regardless of group access, and can manage the catalog. */
 export function isOwner(email: string | null | undefined): boolean {
   if (!email) return false;
-  return ownerEmails.includes(email.toLowerCase());
+  return ownerEmails().includes(email.toLowerCase());
 }
