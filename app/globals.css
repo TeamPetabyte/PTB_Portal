@@ -38,9 +38,9 @@ html, body { margin: 0; padding: 0; }
 .par { position: absolute; inset: 0; will-change: transform; transition: transform .25s ease-out; }
 .l3d { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .l3d-glow { position: absolute; width: 780px; height: 780px; right: -140px; top: 50%; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle,rgba(47,128,216,.16),rgba(47,128,216,0) 65%); }
-.hero-tile { position: absolute; right: 13%; top: 50%; width: min(17vw,220px); height: min(17vw,220px); display: flex; align-items: center; justify-content: center; animation: tfloat 9s ease-in-out infinite; filter: drop-shadow(0 24px 48px rgba(19,76,122,.22)); }
+.hero-tile { position: absolute; right: 13%; top: 50%; width: min(17vw,220px); height: min(17vw,220px); display: flex; align-items: center; justify-content: center; animation: tfloat 5.5s ease-in-out infinite; filter: drop-shadow(0 24px 48px rgba(19,76,122,.22)); }
 .tile-mark { width: 100%; height: 100%; object-fit: contain; }
-@keyframes tfloat { 0%, 100% { transform: translateY(-54%) rotate(-6deg); } 50% { transform: translateY(-59%) rotate(-3deg); } }
+@keyframes tfloat { 0%, 100% { transform: translateY(-50%) rotate(-7deg); } 50% { transform: translateY(-62%) rotate(-1deg); } }
 .chip { position: absolute; display: flex; align-items: center; justify-content: center; color: var(--accent); filter: drop-shadow(0 10px 18px rgba(19,76,122,.28)); }
 .chip svg { width: 34px; height: 34px; }
 .c4 svg { width: 26px; height: 26px; }
@@ -333,7 +333,9 @@ html, body { margin: 0; padding: 0; }
 .dark .am-btn-danger:hover { background: #2b151a; border-color: #5c2a2a; }
 .dark .support { background: linear-gradient(160deg, #121e33, #0e1828); }
 
-/* Keep motion effects out of the way for users who opt out of animation. */
+/* Reduced motion: skip the dashboard entrance zoom. The login-hero float,
+   chips, caret, and typewriter stay on deliberately — they're the signature
+   of the design (owner's call) and are small, slow, contained movements. */
 @media (prefers-reduced-motion: reduce) {
-  .hero-tile, .chip, .caret, .dash { animation: none; }
+  .dash { animation: none; }
 }

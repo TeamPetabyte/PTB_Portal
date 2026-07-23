@@ -20,20 +20,24 @@ export default function LoginScreen() {
   const parBRef = useRef<HTMLDivElement>(null);
 
   // Typewriter title, restarting if the language (and thus the title) changes.
-  // Reduced motion → show the full title immediately.
+  // It always plays: a one-shot text reveal is gentle enough under
+  // prefers-reduced-motion (the looping float/parallax effects stay disabled
+  // via CSS), and it's the signature moment of this design.
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setTypedN(title.length);
-      return;
-    }
     setTypedN(0);
-    const id = setInterval(() => {
-      setTypedN((n) => {
-        if (n + 1 >= title.length) clearInterval(id);
-        return Math.min(n + 1, title.length);
-      });
-    }, TYPE_SPEED_MS);
-    return () => clearInterval(id);
+    let interval: ReturnType<typeof setInterval> | undefined;
+    const start = setTimeout(() => {
+      interval = setInterval(() => {
+        setTypedN((n) => {
+          if (n + 1 >= title.length && interval) clearInterval(interval);
+          return Math.min(n + 1, title.length);
+        });
+      }, TYPE_SPEED_MS);
+    }, 250);
+    return () => {
+      clearTimeout(start);
+      if (interval) clearInterval(interval);
+    };
   }, [title]);
 
   function handleMicrosoft() {
