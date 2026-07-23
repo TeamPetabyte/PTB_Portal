@@ -110,7 +110,7 @@ html, body { margin: 0; padding: 0; }
 .iconbtn:hover { background: #f6f8fb; color: var(--ink); }
 .dot { position: absolute; top: 9px; right: 10px; width: 7px; height: 7px; border-radius: 50%; background: #ef4444; border: 2px solid #fff; }
 .userwrap { position: relative; }
-.userchip { display: flex; align-items: center; gap: 9px; padding: 5px 11px 5px 5px; border-radius: 999px; border: 1px solid var(--line); cursor: pointer; background: #fff; font-family: inherit; transition: .13s; }
+.userchip { display: flex; align-items: center; gap: 9px; padding: 5px 11px 5px 5px; border-radius: 999px; border: 1px solid var(--line); cursor: pointer; background: #fff; color: var(--ink); font-family: inherit; transition: .13s; }
 .userchip:hover { background: #f6f8fb; }
 .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex: none; }
 .avatar.lg { width: 40px; height: 40px; font-size: 15px; }
@@ -201,7 +201,7 @@ html, body { margin: 0; padding: 0; }
 .am-back:hover { color: var(--accent); }
 .am-back-ico { transform: rotate(180deg); }
 
-.am-addform, .am-editform { display: grid; grid-template-columns: 1.2fr 1.6fr auto 1.4fr; gap: 10px; align-items: center; }
+.am-addform { display: grid; grid-template-columns: 1.2fr 1.6fr auto 1.4fr; gap: 10px; align-items: center; }
 .am-newtab { grid-column: 1 / -2; }
 .am-check { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink2); font-weight: 600; cursor: pointer; white-space: nowrap; }
 .am-check input { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex: none; }
@@ -210,11 +210,11 @@ html, body { margin: 0; padding: 0; }
 .am-logo-btn { display: inline-flex; align-items: center; }
 .am-name-logo { width: 18px; height: 18px; object-fit: contain; flex: none; }
 .am-addform { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 24px; }
-.am-editform { padding: 12px 0; }
-.am-editform-actions { display: flex; gap: 8px; }
+.am-edit-stack { display: flex; flex-direction: column; gap: 8px; }
+.am-row-editing td { background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
 
 .am-addform input:not([type="checkbox"]), .am-addform select,
-.am-editform input:not([type="checkbox"]), .am-editform select,
+.am-row-editing input:not([type="checkbox"]),
 .am-annform input {
   font: inherit; font-size: 13px; color: var(--ink); background: var(--bg);
   border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; width: 100%;

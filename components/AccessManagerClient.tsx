@@ -17,8 +17,9 @@ import type { Announcement } from "./portal-data";
 
 const MAX_LOGO_BYTES = 200 * 1024;
 
-/** Upload an app logo (stored as a data URI); falls back to the icon when empty. */
-function LogoField({ initial }: { initial?: string | null }) {
+/** Upload an app logo (stored as a data URI); falls back to the icon when empty.
+ * `formId` associates the hidden value with a form it doesn't sit inside. */
+function LogoField({ initial, formId }: { initial?: string | null; formId?: string }) {
   const [logo, setLogo] = useState(initial ?? "");
 
   function onFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -40,7 +41,7 @@ function LogoField({ initial }: { initial?: string | null }) {
 
   return (
     <div className="am-logo">
-      <input type="hidden" name="logo" value={logo} />
+      <input type="hidden" name="logo" value={logo} form={formId} />
       {logo && <img src={logo} alt="Logo preview" className="am-logo-preview" />}
       <label className="am-btn am-logo-btn">
         {logo ? "Change logo" : "Upload logo"}
@@ -123,23 +124,69 @@ export default function AccessManagerClient({
         <tbody>
           {apps.map((app, idx) =>
             editingId === app.id ? (
+              // Edit-in-place uses the real table cells so every field lines up
+              // with its column header; inputs join the form via the `form` attr.
               <tr key={app.id} className="am-row-editing">
-                <td colSpan={5}>
+                <td>
                   <form
+                    id={`edit-${app.id}`}
                     action={async (formData) => {
                       await updateApp(app.id, formData);
                       setEditingId(null);
                     }}
-                    className="am-editform"
-                  >
-                    <AppFields app={app} />
-                    <div className="am-editform-actions">
-                      <button type="submit" className="am-btn am-btn-primary">Save</button>
-                      <button type="button" className="am-btn" onClick={() => setEditingId(null)}>
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
+                  />
+                  <div className="am-edit-stack">
+                    <input
+                      form={`edit-${app.id}`}
+                      name="name"
+                      placeholder="Name"
+                      defaultValue={app.name}
+                      required
+                    />
+                    <input
+                      form={`edit-${app.id}`}
+                      name="description"
+                      placeholder="Description"
+                      defaultValue={app.description}
+                      required
+                    />
+                    <LogoField initial={app.logo} formId={`edit-${app.id}`} />
+                  </div>
+                </td>
+                <td>
+                  <div className="am-edit-stack">
+                    <input
+                      form={`edit-${app.id}`}
+                      name="url"
+                      type="url"
+                      placeholder="https://…"
+                      defaultValue={app.url}
+                      required
+                    />
+                    <label className="am-check">
+                      <input
+                        form={`edit-${app.id}`}
+                        type="checkbox"
+                        name="openInNewTab"
+                        defaultChecked={app.openInNewTab}
+                      />
+                      <span>Open in new tab</span>
+                    </label>
+                  </div>
+                </td>
+                <td className="am-opens">{opens[app.id] ?? 0}</td>
+                <td>
+                  <span className={`am-badge ${app.active ? "am-badge-on" : "am-badge-off"}`}>
+                    {app.active ? "Active" : "Hidden"}
+                  </span>
+                </td>
+                <td className="am-actions">
+                  <button form={`edit-${app.id}`} type="submit" className="am-btn am-btn-primary">
+                    Save
+                  </button>
+                  <button type="button" className="am-btn" onClick={() => setEditingId(null)}>
+                    Cancel
+                  </button>
                 </td>
               </tr>
             ) : (
