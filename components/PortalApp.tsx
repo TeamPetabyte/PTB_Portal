@@ -52,7 +52,7 @@ export default function PortalApp({
 
   // Popups don't vanish the instant the pointer slips out — they get a short
   // grace period, and coming back inside cancels the close.
-  const CLOSE_DELAY_MS = 500;
+  const CLOSE_DELAY_MS = 1000;
 
   function delayedClose(close: () => void) {
     clearTimeout(closeTimer.current);
