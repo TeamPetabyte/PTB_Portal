@@ -71,16 +71,10 @@ function AppFields({ app }: { app?: AppRow }) {
       </select>
       <LogoField initial={app?.logo} />
       <input name="url" type="url" placeholder="https://…" defaultValue={app?.url} required />
-      <div className="am-opts">
-        <select name="authType" defaultValue={app?.authType ?? "sso"}>
-          <option value="sso">Sign-in: SSO</option>
-          <option value="own-login">Sign-in: own login</option>
-        </select>
-        <label className="am-check">
-          <input type="checkbox" name="openInNewTab" defaultChecked={app?.openInNewTab} />
-          Open in new tab
-        </label>
-      </div>
+      <label className="am-check am-newtab">
+        <input type="checkbox" name="openInNewTab" defaultChecked={app?.openInNewTab} />
+        Open in new tab
+      </label>
     </>
   );
 }

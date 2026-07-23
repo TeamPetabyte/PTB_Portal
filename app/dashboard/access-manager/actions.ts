@@ -24,7 +24,6 @@ function readLogo(formData: FormData): string | null {
 }
 
 function readAppFields(formData: FormData) {
-  const authType = String(formData.get("authType") ?? "");
   return {
     name: String(formData.get("name") ?? "").trim(),
     description: String(formData.get("description") ?? "").trim(),
@@ -35,7 +34,8 @@ function readAppFields(formData: FormData) {
     logo: readLogo(formData),
     url: String(formData.get("url") ?? "").trim(),
     openInNewTab: formData.get("openInNewTab") === "on",
-    authType: authType === "own-login" ? "own-login" : "sso",
+    // authType stays "sso" for every app — internal-only for now. The DB
+    // column keeps its default; bring a picker back if that ever changes.
   };
 }
 
