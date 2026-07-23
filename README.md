@@ -106,6 +106,7 @@ npm run dev                  # → http://localhost:3000
 - อัปโหลด**โลโก้ของแอป**ได้ใน Access Manager (เก็บเป็น data URI ในคอลัมน์ `logo`, จำกัด 200KB + validate ฝั่ง server) — การ์ดใน dashboard และตารางแอดมินโชว์โลโก้จริง ไม่ใส่ก็ fallback เป็น icon เดิม
 - **Categories ซ่อนไว้ชั่วคราว** (ตัดสินใจ 2026-07-22: ยังไม่รู้ taxonomy จริง) — เอาออกจาก sidebar, ฟอร์ม, ตาราง และป้ายบนการ์ดแล้ว แต่คอลัมน์ `category` ยังอยู่ใน DB (แอปใหม่ได้ค่า default `data`) เปิดกลับมาได้โดยไม่ต้อง migrate
 - Greeting ทักด้วยชื่อจริงของ user · favorites/recently-used persist ต่อผู้ใช้ (localStorage แยกตามอีเมล)
+- ลากจัดลำดับได้ทั้งหน้า **All Apps** (เก็บลำดับส่วนตัวต่อผู้ใช้ `ptb_apporder_v1:<email>` — ใครไม่จัดใช้ลำดับ owner, แอปใหม่ต่อท้าย) และ **Favorites** — Recently Used ไม่ลาก (เรียงตามเวลาอัตโนมัติ)
 - ปุ่ม **"Manage apps"** ใน sidebar เป็นปุ่ม CTA สีชัดเจน (เดิมกลืนไปกับเมนู)
 - Git repo บน GitHub (`TeamPetabyte/PTB_Portal`) + tag **v1.1** พร้อม release notes
 - ใบขอสำหรับแอดมิน M365 ครบ 2 ฉบับ: App Registration (`docs/entra-app-registration-request.md`) และ groups claim (`docs/entra-groups-claim-request.md` — พร้อมส่ง)

@@ -52,9 +52,11 @@ export default function PortalApp({
   const [palIndex, setPalIndex] = useState(0);
   const palInputRef = useRef<HTMLInputElement>(null);
 
-  // Drag-to-reorder favorites.
+  // Drag-to-reorder (Favorites + All Apps).
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  // Personal ordering of the All Apps view (null = follow the owner's order).
+  const [appOrder, setAppOrder] = useState<string[] | null>(null);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -120,6 +122,8 @@ export default function PortalApp({
     };
     setFavs(load("favs"));
     setRecent(load("recent"));
+    const order = load("apporder");
+    if (order.length) setAppOrder(order);
     try {
       if (localStorage.getItem("ptb_density_v1") === "compact") setDensity("compact");
       if (localStorage.getItem("ptb_theme_v1") === "dark") setTheme("dark");
@@ -189,12 +193,13 @@ export default function PortalApp({
     try {
       localStorage.setItem(prefsKey("favs"), JSON.stringify(favs));
       localStorage.setItem(prefsKey("recent"), JSON.stringify(recent));
+      if (appOrder) localStorage.setItem(prefsKey("apporder"), JSON.stringify(appOrder));
     } catch {
       // Storage blocked (private mode / quota) — favorites simply won't persist.
     }
     // prefsKey is derived from the (stable) signed-in email, so it's safe to omit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [favs, recent, prefsLoaded]);
+  }, [favs, recent, appOrder, prefsLoaded]);
 
   function openApp(app: (typeof apps)[number]) {
     setRecent((r) => [app.id, ...r.filter((x) => x !== app.id)].slice(0, 8));
@@ -233,15 +238,23 @@ export default function PortalApp({
     e.currentTarget.style.transform = "";
   }
 
-  // Move the dragged favorite to sit where the drop target currently is.
-  function reorderFav(targetId: string) {
+  // Move `drag` to sit where `target` currently is within an ordered id list.
+  function moveWithin(ids: string[], drag: string, target: string): string[] {
+    const next = ids.filter((x) => x !== drag);
+    const at = next.indexOf(target);
+    next.splice(at < 0 ? next.length : at, 0, drag);
+    return next;
+  }
+
+  // Drop handler for the current view: reorders favorites, or saves a personal
+  // All Apps order (snapshotting the full visible order so it's stable).
+  function onCardDrop(targetId: string) {
     if (!dragId || dragId === targetId) return;
-    setFavs((f) => {
-      const next = f.filter((x) => x !== dragId);
-      const at = next.indexOf(targetId);
-      next.splice(at < 0 ? next.length : at, 0, dragId);
-      return next;
-    });
+    if (cat === "fav") {
+      setFavs((f) => moveWithin(f, dragId, targetId));
+    } else if (cat === "all") {
+      setAppOrder(moveWithin(visibleApps.map((a) => a.id), dragId, targetId));
+    }
     setDragId(null);
     setOverId(null);
   }
@@ -261,11 +274,16 @@ export default function PortalApp({
     if (cat === "fav") base = apps.filter((a) => favs.includes(a.id));
     else if (cat === "recent")
       base = recent.map((id) => apps.find((a) => a.id === id)).filter(Boolean) as typeof apps;
-    else base = apps;
+    else if (appOrder) {
+      // Personal order first; apps not in it (e.g. newly added by an owner)
+      // keep their DB order at the end via the stable sort.
+      const pos = new Map(appOrder.map((id, i) => [id, i]));
+      base = [...apps].sort((a, b) => (pos.get(a.id) ?? Infinity) - (pos.get(b.id) ?? Infinity));
+    } else base = apps;
 
     const q = query.trim().toLowerCase();
     return q ? base.filter((a) => (a.name + " " + a.desc).toLowerCase().includes(q)) : base;
-  }, [cat, query, favs, recent, apps]);
+  }, [cat, query, favs, recent, apps, appOrder]);
 
   const palList = useMemo(() => {
     const q = palQuery.trim().toLowerCase();
@@ -304,7 +322,13 @@ export default function PortalApp({
       };
     if (cat === "recent")
       return { title: "Recently used", sub: `Your most recent ${visibleApps.length} apps` };
-    return { title: "All applications", sub: `${apps.length} apps available to you` };
+    return {
+      title: "All applications",
+      sub:
+        apps.length > 1
+          ? `${apps.length} apps available to you · drag to reorder`
+          : `${apps.length} apps available to you`,
+    };
   }, [cat, query, favs, visibleApps, apps]);
 
   const emptyMsg = query.trim()
@@ -494,7 +518,7 @@ export default function PortalApp({
               <div className="grid">
                 {visibleApps.map((app) => {
                   const faved = favs.includes(app.id);
-                  const canDrag = cat === "fav" && !query.trim();
+                  const canDrag = (cat === "fav" || cat === "all") && !query.trim();
                   return (
                     <div
                       key={app.id}
@@ -520,7 +544,7 @@ export default function PortalApp({
                         canDrag
                           ? (e) => {
                               e.preventDefault();
-                              reorderFav(app.id);
+                              onCardDrop(app.id);
                             }
                           : undefined
                       }
