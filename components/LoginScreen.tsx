@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { signIn } from "next-auth/react";
 import { Icon, IconSprite } from "./icons";
+import { useI18n } from "@/lib/i18n";
 
 /** Login screen — ported from the latest design (design/login.html). */
 
-const TITLE = "Every internal tool\nOne front door";
 const TYPE_SPEED_MS = 42;
 
 export default function LoginScreen() {
+  const { t } = useI18n();
+  const title = t("login.title");
   const [loading, setLoading] = useState(false);
   const [typedN, setTypedN] = useState(0);
 
@@ -17,20 +19,22 @@ export default function LoginScreen() {
   const parARefs = useRef<(HTMLDivElement | null)[]>([]);
   const parBRef = useRef<HTMLDivElement>(null);
 
-  // Typewriter title. Reduced motion → show the full title immediately.
+  // Typewriter title, restarting if the language (and thus the title) changes.
+  // Reduced motion → show the full title immediately.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setTypedN(TITLE.length);
+      setTypedN(title.length);
       return;
     }
+    setTypedN(0);
     const id = setInterval(() => {
       setTypedN((n) => {
-        if (n + 1 >= TITLE.length) clearInterval(id);
-        return Math.min(n + 1, TITLE.length);
+        if (n + 1 >= title.length) clearInterval(id);
+        return Math.min(n + 1, title.length);
       });
     }, TYPE_SPEED_MS);
     return () => clearInterval(id);
-  }, []);
+  }, [title]);
 
   function handleMicrosoft() {
     setLoading(true);
@@ -74,7 +78,7 @@ export default function LoginScreen() {
     e.currentTarget.style.transform = "";
   }
 
-  const caretOff = typedN >= TITLE.length;
+  const caretOff = typedN >= title.length;
 
   return (
     <div className="root ui" style={{ ["--accent" as string]: "#2f80d8" }}>
@@ -131,13 +135,10 @@ export default function LoginScreen() {
 
         <main className="lmain">
           <h1 className="l-title fx">
-            {TITLE.slice(0, typedN)}
+            {title.slice(0, typedN)}
             <span className={`caret ${caretOff ? "off" : ""}`} />
           </h1>
-          <p className="l-p fx">
-            Sign in once with your Microsoft account and launch every app your
-            team depends on — from a single, secure hub.
-          </p>
+          <p className="l-p fx">{t("login.blurb")}</p>
           <div className="l-cta fx">
             <button
               className="l-ms"
@@ -167,7 +168,7 @@ export default function LoginScreen() {
                   <path fill="#FFB900" d="M12 12h10v10H12z" />
                 </svg>
               )}
-              SIGN IN WITH MICROSOFT
+              {t("login.cta")}
               <Icon name="arrow" className="ic14" />
             </button>
             <div className="l-lock">
@@ -175,9 +176,9 @@ export default function LoginScreen() {
                 <Icon name="lock" className="ic18" />
               </span>
               <span className="l-locktxt">
-                SSO PROTECTED
+                {t("login.ssoProtected")}
                 <br />
-                @PETABYTE.CO.TH ONLY
+                {t("login.domainOnly")}
               </span>
             </div>
           </div>

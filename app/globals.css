@@ -93,6 +93,11 @@ html, body { margin: 0; padding: 0; }
 .admin-btn:hover { transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 10px 22px -8px color-mix(in srgb, var(--accent) 75%, transparent); }
 .admin-btn-arrow { margin-left: auto; opacity: .85; }
 .side-foot { margin-top: auto; padding-top: 18px; }
+.langswitch { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.langswitch button { flex: 1; font: inherit; font-size: 12.5px; font-weight: 700; padding: 7px 0; border: none; border-radius: 7px; background: none; color: var(--ink2); cursor: pointer; transition: .12s; }
+.langswitch button:hover { color: var(--ink); }
+.langswitch button.on { background: var(--surface); color: var(--accent); box-shadow: 0 1px 3px rgba(15,23,42,.12); }
+.dark .langswitch button.on { background: #17233a; }
 .support { background: linear-gradient(160deg,#f6f8fb,#eef2f8); border: 1px solid var(--line2); border-radius: 13px; padding: 15px; }
 .support-t { font-size: 13.5px; font-weight: 700; }
 .support-p { font-size: 12.5px; color: var(--ink2); margin-top: 4px; line-height: 1.45; }

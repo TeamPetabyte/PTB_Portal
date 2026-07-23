@@ -6,6 +6,7 @@ import { signOut as authSignOut } from "next-auth/react";
 import { Icon, IconSprite } from "./icons";
 import { type Announcement, type App } from "./portal-data";
 import { logAppOpen } from "@/app/dashboard/actions";
+import { useI18n } from "@/lib/i18n";
 
 const ACCENT = "#2f80d8";
 
@@ -32,6 +33,7 @@ export default function PortalApp({
   isOwner?: boolean;
 }) {
   const USER = user;
+  const { locale, setLocale, t } = useI18n();
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<Filter>("all");
   const [favs, setFavs] = useState<string[]>([]);
@@ -203,7 +205,7 @@ export default function PortalApp({
 
   function openApp(app: (typeof apps)[number]) {
     setRecent((r) => [app.id, ...r.filter((x) => x !== app.id)].slice(0, 8));
-    setToast(`Opening ${app.name}…`);
+    setToast(t("toast.opening", { name: app.name }));
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 2200);
 
@@ -264,9 +266,9 @@ export default function PortalApp({
   }
 
   const browseNav = [
-    { key: "all" as Filter, label: "All Apps", icon: "grid", count: apps.length },
-    { key: "fav" as Filter, label: "Favorites", icon: "star", count: favs.length },
-    { key: "recent" as Filter, label: "Recently Used", icon: "clock", count: recent.length },
+    { key: "all" as Filter, label: t("nav.allApps"), icon: "grid", count: apps.length },
+    { key: "fav" as Filter, label: t("nav.favorites"), icon: "star", count: favs.length },
+    { key: "recent" as Filter, label: t("nav.recent"), icon: "clock", count: recent.length },
   ];
 
   const visibleApps = useMemo(() => {
@@ -309,31 +311,33 @@ export default function PortalApp({
   const { title, sub } = useMemo(() => {
     const q = query.trim();
     if (q) {
-      const n = visibleApps.length;
-      return { title: "Search results", sub: `${n} result${n === 1 ? "" : "s"} for “${q}”` };
+      return {
+        title: t("head.search"),
+        sub: t("sub.search", { n: visibleApps.length, q }),
+      };
     }
     if (cat === "fav")
       return {
-        title: "Favorites",
+        title: t("head.favorites"),
         sub:
           favs.length > 1
-            ? `${favs.length} pinned apps · drag to reorder`
-            : `${favs.length} pinned app${favs.length === 1 ? "" : "s"}`,
+            ? t("sub.favoritesDrag", { n: favs.length })
+            : t("sub.favorites", { n: favs.length }),
       };
     if (cat === "recent")
-      return { title: "Recently used", sub: `Your most recent ${visibleApps.length} apps` };
+      return { title: t("head.recent"), sub: t("sub.recent", { n: visibleApps.length }) };
     return {
-      title: "All applications",
+      title: t("head.allApps"),
       sub:
         apps.length > 1
-          ? `${apps.length} apps available to you · drag to reorder`
-          : `${apps.length} apps available to you`,
+          ? t("sub.allAppsDrag", { n: apps.length })
+          : t("sub.allApps", { n: apps.length }),
     };
-  }, [cat, query, favs, visibleApps, apps]);
+  }, [cat, query, favs, visibleApps, apps, t]);
 
   const emptyMsg = query.trim()
-    ? `No apps match “${query.trim()}”. Try a different keyword or clear the search.`
-    : "There are no apps in this view yet.";
+    ? t("empty.search", { q: query.trim() })
+    : t("empty.none");
 
   return (
     <div
@@ -354,7 +358,7 @@ export default function PortalApp({
             </div>
           </div>
 
-          <div className="navlabel">Browse</div>
+          <div className="navlabel">{t("nav.browse")}</div>
           {browseNav.map((n) => (
             <button
               key={n.key}
@@ -372,19 +376,35 @@ export default function PortalApp({
 
           {isOwner && (
             <>
-              <div className="navlabel">Admin</div>
+              <div className="navlabel">{t("nav.admin")}</div>
               <Link
                 href="/dashboard/access-manager"
                 className="admin-btn"
                 onClick={() => setSideOpen(false)}
               >
                 <Icon name="shield" className="ic18" />
-                <span>Manage apps</span>
+                <span>{t("nav.manageApps")}</span>
                 <Icon name="arrow" className="ic14 admin-btn-arrow" />
               </Link>
             </>
           )}
 
+          <div className="side-foot">
+            <div className="langswitch" role="group" aria-label="Language">
+              <button
+                className={locale === "en" ? "on" : ""}
+                onClick={() => setLocale("en")}
+              >
+                EN
+              </button>
+              <button
+                className={locale === "th" ? "on" : ""}
+                onClick={() => setLocale("th")}
+              >
+                ไทย
+              </button>
+            </div>
+          </div>
         </aside>
 
         <div className="main">
@@ -405,7 +425,7 @@ export default function PortalApp({
               <input
                 ref={searchRef}
                 type="text"
-                placeholder="Search apps, tools, services…"
+                placeholder={t("search.placeholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
@@ -422,11 +442,11 @@ export default function PortalApp({
                     onMouseEnter={cancelClose}
                     onMouseLeave={() => delayedClose(() => setNotifOpen(false))}
                   >
-                    <div className="notif-h">Notifications</div>
+                    <div className="notif-h">{t("notif.title")}</div>
                     {announcements.length === 0 ? (
                       <div className="notif-empty">
                         <Icon name="bell" className="ic18" />
-                        <p>Nothing new right now. Company announcements will show up here.</p>
+                        <p>{t("notif.empty")}</p>
                       </div>
                     ) : (
                       <div className="notif-list">
@@ -483,7 +503,7 @@ export default function PortalApp({
                       }}
                     >
                       <Icon name="user" className="ic18" />
-                      Your profile
+                      {t("menu.profile")}
                     </button>
                     <button
                       className="menu-i"
@@ -494,12 +514,12 @@ export default function PortalApp({
                       }}
                     >
                       <Icon name="settings" className="ic18" />
-                      Settings
+                      {t("menu.settings")}
                     </button>
                     <div className="menu-div" />
                     <button className="menu-i danger" onClick={signOut}>
                       <Icon name="logout" className="ic18" />
-                      Sign out
+                      {t("menu.signout")}
                     </button>
                   </div>
                 )}
@@ -509,7 +529,7 @@ export default function PortalApp({
 
           <div className="content">
             <div className="eyebrow" suppressHydrationWarning>
-              {greeting(USER.name)} · {dateStr()}
+              {greeting(USER.name, t)} · {dateStr(locale)}
             </div>
             <h1 className="h-title">{title}</h1>
             <p className="h-sub">{sub}</p>
@@ -579,7 +599,7 @@ export default function PortalApp({
                       <div className="card-d">{app.desc}</div>
                       <div className="card-foot">
                         <span className="open">
-                          Open
+                          {t("card.open")}
                           <Icon name="arrow" className="ic14" />
                         </span>
                       </div>
@@ -592,7 +612,7 @@ export default function PortalApp({
                 <div className="empty-ic">
                   <Icon name="search" className="ic24" />
                 </div>
-                <div className="empty-t">No apps found</div>
+                <div className="empty-t">{t("empty.title")}</div>
                 <div className="empty-p">{emptyMsg}</div>
               </div>
             )}
@@ -614,12 +634,9 @@ export default function PortalApp({
                 <div className="menu-mail">{USER.email}</div>
               </div>
             </div>
-            <p className="modal-p">
-              Your account is managed by Microsoft Entra ID — name and email come
-              from the company directory. To change them, contact IT.
-            </p>
+            <p className="modal-p">{t("profile.note")}</p>
             <div className="modal-actions">
-              <button className="am-btn" onClick={() => setModal(null)}>Close</button>
+              <button className="am-btn" onClick={() => setModal(null)}>{t("common.close")}</button>
             </div>
           </div>
         </div>
@@ -632,49 +649,49 @@ export default function PortalApp({
             onMouseEnter={cancelClose}
             onMouseLeave={() => delayedClose(() => setModal(null))}
           >
-            <div className="modal-t">Settings</div>
+            <div className="modal-t">{t("settings.title")}</div>
             <div className="set-row">
               <div>
-                <div className="set-name">Theme</div>
-                <div className="set-desc">Dark theme is easier on the eyes at night.</div>
+                <div className="set-name">{t("settings.theme")}</div>
+                <div className="set-desc">{t("settings.themeDesc")}</div>
               </div>
               <div className="seg">
                 <button
                   className={theme === "light" ? "on" : ""}
                   onClick={() => setThemePref("light")}
                 >
-                  Light
+                  {t("settings.light")}
                 </button>
                 <button
                   className={theme === "dark" ? "on" : ""}
                   onClick={() => setThemePref("dark")}
                 >
-                  Dark
+                  {t("settings.dark")}
                 </button>
               </div>
             </div>
             <div className="set-row" style={{ marginTop: 16 }}>
               <div>
-                <div className="set-name">Display density</div>
-                <div className="set-desc">Compact fits more apps on screen.</div>
+                <div className="set-name">{t("settings.density")}</div>
+                <div className="set-desc">{t("settings.densityDesc")}</div>
               </div>
               <div className="seg">
                 <button
                   className={density === "comfortable" ? "on" : ""}
                   onClick={() => setDensityPref("comfortable")}
                 >
-                  Comfortable
+                  {t("settings.comfortable")}
                 </button>
                 <button
                   className={density === "compact" ? "on" : ""}
                   onClick={() => setDensityPref("compact")}
                 >
-                  Compact
+                  {t("settings.compact")}
                 </button>
               </div>
             </div>
             <div className="modal-actions">
-              <button className="am-btn" onClick={() => setModal(null)}>Close</button>
+              <button className="am-btn" onClick={() => setModal(null)}>{t("common.close")}</button>
             </div>
           </div>
         </div>
@@ -693,7 +710,7 @@ export default function PortalApp({
               <input
                 ref={palInputRef}
                 type="text"
-                placeholder="Search apps to open…"
+                placeholder={t("palette.placeholder")}
                 value={palQuery}
                 onChange={(e) => {
                   setPalQuery(e.target.value);
@@ -705,7 +722,7 @@ export default function PortalApp({
             </div>
             <div className="pal-list">
               {palList.length === 0 ? (
-                <div className="pal-e">No apps match “{palQuery.trim()}”.</div>
+                <div className="pal-e">{t("palette.empty", { q: palQuery.trim() })}</div>
               ) : (
                 palList.map((app, i) => (
                   <div
@@ -744,14 +761,16 @@ export default function PortalApp({
   );
 }
 
-function greeting(name: string) {
+function greeting(name: string, t: ReturnType<typeof useI18n>["t"]) {
   const h = new Date().getHours();
   const first = name.split(" ")[0] || name;
-  return `${h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"}, ${first}`;
+  const key =
+    h < 12 ? "greeting.morning" : h < 18 ? "greeting.afternoon" : "greeting.evening";
+  return `${t(key)}, ${first}`;
 }
 
-function dateStr() {
-  return new Date().toLocaleDateString("en-US", {
+function dateStr(locale: string) {
+  return new Date().toLocaleDateString(locale === "th" ? "th-TH" : "en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
